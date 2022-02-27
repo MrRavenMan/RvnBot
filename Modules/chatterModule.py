@@ -7,7 +7,7 @@ from discord.ext.commands import Cog, command, has_role
 
 
 config = configparser.ConfigParser()
-config.read("conf/config.ini")
+config.read("config/config.ini")
 owner = config["General"]["manager_role"]
 
 
@@ -29,7 +29,7 @@ class Chatter(Cog):
         self.calls_map = []
 
         # load chats.json file
-        with open('conf/Chatter_conf/chats.json') as chats_file:
+        with open('config/chats.json') as chats_file:
             chats_data = json.load(chats_file)
             self.chats = chats_data["chats"]
             self.always_respond_to_role_ids = chats_data["always_respond_to_role_ids"]
@@ -43,7 +43,7 @@ class Chatter(Cog):
 
     @Cog.listener()
     async def on_ready(self):
-        print("Chatter: ON")
+        print("Chatter Module: ONLINE")
         print(f"Chatter contains {len(self.chats)} different chats")
 
 

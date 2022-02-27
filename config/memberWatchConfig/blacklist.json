@@ -1,0 +1,12 @@
+{
+    "whitelisted_role_ids": [854340374138716180, 853692936465940501],
+    "blacklisted_words": [
+        "Testingword1",
+        "Testingword2",
+        "john1",
+        "bob",
+        "jacob",
+        "jake6",
+        "@everyone"
+    ]
+}

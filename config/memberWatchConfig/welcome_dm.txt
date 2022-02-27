@@ -1,0 +1,1 @@
+Welcome to {user_mention} to **{server_mention}**! Enjoy your stay

@@ -11,7 +11,7 @@ class MemberWatch(Cog):
         self.bot = client
         self.config = config
 
-        with open('conf/MemberWatch_conf/blacklist.json') as blacklist_file:
+        with open('config/memberWatchConfig/blacklist.json') as blacklist_file:
             blacklist_data = json.load(blacklist_file)
             dirty_blacklist = blacklist_data["blacklisted_words"]
             self.whitelisted_role_ids = blacklist_data["whitelisted_role_ids"]
@@ -23,7 +23,7 @@ class MemberWatch(Cog):
 
     @Cog.listener()
     async def on_ready(self):
-        print("Member Watch: ON")
+        print("Member Watch Module: ONLINE")
         print(f"Blacklist contains {len(self.blacklist)} blacklisted words")
         print(f"{len(self.whitelisted_role_ids)} roles are whitelisted from the blacklist")
 
@@ -33,7 +33,7 @@ class MemberWatch(Cog):
         await self.bot.get_channel(int(self.config["join_msg_channel_id"])).send(f"{member.mention} has joined the server!")
 
         try:
-            with open ("conf/MemberWatch_conf/welcome_dm.txt", "r") as myfile:
+            with open ("config/memberWatchConfig/welcome_dm.txt", "r") as myfile:
                 data=myfile.readlines()
             text = ""
             for i in data:
