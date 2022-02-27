@@ -7,7 +7,7 @@ from discord_components import DiscordComponents
 
 
 config = configparser.ConfigParser()
-config.read("conf/config.ini")
+config.read("config/config.ini")
 
 intents = discord.Intents.default()
 intents.members = True
@@ -16,31 +16,39 @@ TOKEN = config["General"]["TOKEN"]
 
 client = commands.Bot(command_prefix='!', intents=intents)
 
-""" Load modules """
-# Start modules as specified in config
-if config.getboolean("General", "enable_Assigner"):
-    from assigner import Assigner
-    client.add_cog(Assigner(client, config['Assigner']))
-else:
-    print("Assigner: OFF - not enabled in config")
+def main():
+    # Load config and create client class
+    
 
-if config.getboolean("General", "enable_MemberWatch"):
-    from member_watch import MemberWatch
-    client.add_cog(MemberWatch(client, config['MemberWatch']))
-else:
-    print("Member Watch: OFF - not enabled in config")
 
-if config.getboolean("General", "enable_Chatter"):
-    from chatter import Chatter
-    client.add_cog(Chatter(client, config['Chatter']))
-else:
-    print("Chatter: OFF - not enabled in config")
+    """ Load modules """
+    # Start modules as specified in config
+    if config.getboolean("General", "enable_Assigner"):
+        from assigner import Assigner
+        client.add_cog(Assigner(client, config['Assigner']))
+    else:
+        print("Assigner: OFF - not enabled in config")
 
-if config.getboolean("General", "enable_MusicPlayer"):
-    from music_player import MusicPlayer
-    client.add_cog(MusicPlayer(client))
-else:
-    print("Music Player: OFF - not enabled in config")
+    if config.getboolean("General", "enable_MemberWatch"):
+        from member_watch import MemberWatch
+        client.add_cog(MemberWatch(client, config['MemberWatch']))
+    else:
+        print("Member Watch: OFF - not enabled in config")
+
+    if config.getboolean("General", "enable_Chatter"):
+        from chatter import Chatter
+        client.add_cog(Chatter(client, config['Chatter']))
+    else:
+        print("Chatter: OFF - not enabled in config")
+
+    if config.getboolean("General", "enable_MusicPlayer"):
+        from music_player import MusicPlayer
+        client.add_cog(MusicPlayer(client))
+    else:
+        print("Music Player: OFF - not enabled in config")
+
+    """ RUN """
+    client.run(TOKEN)
 
 
 @client.event
@@ -69,7 +77,6 @@ async def on_ready():
         print("Error loading status. \n Make sure Status in config is a number. Set status to 0 to turn status off")
     except:
         print("ERROR (Non valueError) loading status")
-
 
 
 """ Utility commands """
@@ -118,7 +125,7 @@ async def remove_role(ctx, role: discord.Role, user: discord.Member):
         await ctx.send(f"Successfully removed {role.mention} from {user.mention}.")
         print(f"Successfully removed {role.mention} from {user.mention}.")
 
-
-
 """ RUN """
-client.run(TOKEN)
+if __name__ == "__main__":
+    main()
+
