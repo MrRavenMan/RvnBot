@@ -1,8 +1,0 @@
-env/
-.vs/
-__pycache__/.vs
-RvnBot.pyproj
-RvnBot.sln
-.gitignore
-.gitattributes
-/env
