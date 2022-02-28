@@ -8,6 +8,10 @@ from discord.ext import commands
 from discord import utils, Embed, Colour, File, Forbidden
 from discord_components import Button, ButtonStyle, InteractionType, component
 
+
+from helpers.command_helpers import cmd_acknowledge
+
+
 config = configparser.ConfigParser()
 config.read("config/config.ini")
 owner = config["General"]["manager_role"]
@@ -50,8 +54,9 @@ class Assigner(commands.Cog):
                 role_list += f'*{role_num}: {self.roles[role_num]["role_name"]}\n'
 
         await ctx.message.reply(role_list)
-        await ctx.message.delete()
+        await cmd_acknowledge(ctx)
 
+    """
     @commands.command(brief="Post introduction message for role buttons")
     @commands.has_role(owner)
     async def role_intro_text(self, ctx): # Send introduction message derived from conf/Assigner_conf/role_intro.txt {faq_channel_id} mention available
@@ -71,7 +76,7 @@ class Assigner(commands.Cog):
         if self.config["role_introduction"] == "True":
             await ctx.send(file=File(self.config["role_introduction_picture"]))
             await ctx.message.delete()
-
+    """
 
     @commands.command(brief=f'Buttons for assigning/unassigning all roles with one click')
     @commands.has_role(owner)
@@ -91,7 +96,7 @@ class Assigner(commands.Cog):
                 [join, leave]
             ]
         )
-        await ctx.message.delete()
+        await cmd_acknowledge(ctx)
 
 
     """ Commands for special roles """
@@ -110,9 +115,7 @@ class Assigner(commands.Cog):
                 else:
                     print(f"An error orcurred while trying to invert {role.name}'s special role 1 role")
 
-                await ctx.message.add_reaction('\N{THUMBS UP SIGN}')
-                time.sleep(0.5)
-                await ctx.message.delete()
+                await cmd_acknowledge(ctx)
     except ValueError:
         print("Please make sure special_role_1_admin_id and special_role_1_id is a role ID or 0 to disable")
     except:
@@ -133,9 +136,7 @@ class Assigner(commands.Cog):
                 else:
                     print(f"An error orcurred while trying to invert {role.name}'s special role 2 role")
 
-                await ctx.message.add_reaction('\N{THUMBS UP SIGN}')
-                time.sleep(0.5)
-                await ctx.message.delete()
+                await cmd_acknowledge(ctx)
     except ValueError:
         print("Please make sure special_role_2_admin_id and special_role_2_id is a role ID or 0 to disable")
     except:
@@ -156,9 +157,7 @@ class Assigner(commands.Cog):
                 else:
                     print(f"An error orcurred while trying to invert {role.name}'s special role 3 role")
 
-                await ctx.message.add_reaction('\N{THUMBS UP SIGN}')
-                time.sleep(0.5)
-                await ctx.message.delete()
+                await cmd_acknowledge(ctx)
     except ValueError:
         print("Please make sure special_role_3_admin_id and special_role_3_id is a role ID or 0 to disable")
     except:

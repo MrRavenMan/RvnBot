@@ -6,6 +6,9 @@ import time
 from discord.ext.commands import Cog, command, has_role
 
 
+from helpers.command_helpers import cmd_acknowledge
+
+
 config = configparser.ConfigParser()
 config.read("config/config.ini")
 owner = config["General"]["manager_role"]
@@ -51,9 +54,7 @@ class Chatter(Cog):
     @has_role(owner)
     async def reload_chats(self, ctx): # Display available role commands
         self.load_chats()
-        await ctx.message.add_reaction('\N{THUMBS UP SIGN}')
-        time.sleep(0.5)
-        await ctx.message.delete()
+        await cmd_acknowledge(ctx)
         print("Chatter: RELOADED")
         print(f"Chatter contains {len(self.chats)} different chats")
 

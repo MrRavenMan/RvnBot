@@ -2,7 +2,6 @@ import discord
 import configparser
 import time
 
-from discord_components import DiscordComponents
 from discord.ext import commands
 
 
@@ -17,7 +16,6 @@ def main():
     TOKEN = config["General"]["TOKEN"]
 
     client = commands.Bot(command_prefix='!', intents=intents)
-    DiscordComponents(client)
 
     """ Load modules """
     # Start modules as specified in config
