@@ -1,0 +1,2 @@
+**This button is for assigning/unassigning all roles of the community. Head over to the {faq_channel}**
+This message is configured in the conf/role_all.txt file. faq_channel in brackets is available and required!

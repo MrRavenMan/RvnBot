@@ -9,11 +9,10 @@ from discord.ext import commands
 from discord.ui import Button
 
 from helpers.command_helpers import cmd_acknowledge
-from views.roleAssignmentView import RoleAssignmentView
+from views.roleAssignmentViews import RoleAssignmentView, MultiRoleAssignmentView
 config = configparser.ConfigParser()
 config.read("config/config.ini")
 owner = config["General"]["manager_role"]
-
 
 
 class Assigner(commands.Cog):
@@ -21,9 +20,6 @@ class Assigner(commands.Cog):
         self.bot = client
         self.config = config
         self.btns_on = True # If true, buttons are already activated
-
-        with open('config/roleAssignerConfig/roles.json') as json_file:
-            self.roles = json.load(json_file)
 
         with open ("config/roleAssignerConfig/role_btn_msg.txt", "r") as myfile:
             data=myfile.readlines()
@@ -37,26 +33,6 @@ class Assigner(commands.Cog):
         print("Assigner: ONLINE")
 
         self.listen_for_butttons()
-
-    @commands.command(brief=f'Buttons for assigning/unassigning all roles with one click')
-    @commands.has_role(owner)
-    async def role_all(self, ctx):  # Button for picking all roles with one click
-        join = Button(style=ButtonStyle.blue, label="Assign All Roles", id="e_all_join")
-        leave = Button(style=ButtonStyle.red, label="Unassign All Roles", id="e_all_leave")
-
-        with open ("conf/Assigner_conf/role_all.txt", "r") as myfile:
-            data=myfile.readlines()
-        role_all_msg = ""
-        for i in data:
-            role_all_msg += i
-
-        await ctx.send(
-            role_all_msg.format(faq_channel=ctx.guild.get_channel(int(self.config["faq_channel_id"])).mention),
-            components=[
-                [join, leave]
-            ]
-        )
-        await cmd_acknowledge(ctx)
 
 
     """ Commands for special roles """
@@ -123,12 +99,13 @@ class Assigner(commands.Cog):
     except:
         print("Error loading special role 3 or/and special role 3 admin")
 
-    def listen_for_butttons(self):
-        for guild in self.bot.guilds:
+
+    def listen_for_butttons(self):  # Goes through all assignable roles and listens 
+        for guild in self.bot.guilds: # for role assignment button clicks for each role
             for role in guild.roles:
                 print(role.id, role.name, role.is_assignable())
                 if role.is_assignable():
-                    self.bot.add_view(self.PersistentView(role))
+                    self.bot.add_view(RoleAssignmentView(role))
 
 
     @commands.command(brief=f'Buttons for assigning/unassigning Role 1')
@@ -136,23 +113,17 @@ class Assigner(commands.Cog):
     async def role(self, ctx):
         role_id = int(ctx.message.content.replace("!role", "").replace("<@&", "").replace(">", ""))
         role = ctx.guild.get_role(role_id)
-        await self.role_func(ctx, role)
-
-
-    
-    async def role_func(self, ctx, role):
+        
         print(f'Adding button for {role.name}')
         view = RoleAssignmentView(role)
     
         if self.config.getboolean("role_btn_tag_later") is True: # Avoids the mention of a role, tagging the whole role
             msg = await ctx.send("Generating button, please hold...")
             await asyncio.sleep(0.7)
-
             await msg.edit(
                 content=self.role_btn_msg.format(role_mention=role.mention,
                                         faq_channel=ctx.guild.get_channel(int(self.config["faq_channel_id"])).mention),
                 view=view
-                
             )
             await ctx.message.delete()
         elif self.config.getboolean("role_btn_tag_later") is False:
@@ -163,6 +134,31 @@ class Assigner(commands.Cog):
             )
         else:
             print("ATTENTION: ERROR: Config [Assigner]role_btn_tag_later is invalid. Must be set to True/False!")
+
+        await cmd_acknowledge(ctx)
+
+
+    @commands.command(brief=f'Buttons for assigning/unassigning all roles with one click')
+    @commands.has_role(owner)
+    async def role_all(self, ctx):  # Button for picking all roles with one click
+        roles = []
+        cmd_input = ctx.message.content.replace("!role_all", "").replace("<@&", "").replace(">", "") # Clean input to a list of role ids
+        for id in cmd_input.split():
+            if id.isdigit():
+                roles.append(ctx.guild.get_role(int(id)))
+
+        print(f'Adding role assignment button for All')
+        view = MultiRoleAssignmentView(roles)
+    
+        with open ("config/roleAssignerConfig/role_all.txt", "r") as myfile:
+            data=myfile.readlines()
+        role_all_msg = ""
+        for i in data:
+            role_all_msg += i
+        await ctx.send(
+            role_all_msg.format(faq_channel=ctx.guild.get_channel(int(self.config["faq_channel_id"])).mention),
+            view=view
+        )
+
+        await cmd_acknowledge(ctx)
         
-        
-        await ctx.message.delete() # Delete command msg
