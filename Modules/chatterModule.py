@@ -1,13 +1,11 @@
 import random
 import json
 import configparser
-import time
 
 from discord.ext.commands import Cog, command, has_role
 
-
 from helpers.command_helpers import cmd_acknowledge
-
+from embeds.infoEmbeds import BotStatusEmbed
 
 config = configparser.ConfigParser()
 config.read("config/config.ini")
@@ -23,41 +21,12 @@ class Chatter(Cog):
         self.calls_map = []
         self.always_respond_to_role_ids = []
         self.chats = []
-        self.load_chats()
-    
-
-    def load_chats(self):
-        # Clear class vars
-        self.calls = []
-        self.calls_map = []
-
-        # load chats.json file
-        with open('config/chats.json') as chats_file:
-            chats_data = json.load(chats_file)
-            self.chats = chats_data["chats"]
-            self.always_respond_to_role_ids = chats_data["always_respond_to_role_ids"]
-
-        # map chat calls to index of chats
-        for i, chat in enumerate(self.chats):
-            for call in chat["call"]:
-                self.calls.append(call.lower())
-                self.calls_map.append(i)
-
+        
 
     @Cog.listener()
     async def on_ready(self):
+        await self.load_chats(startup=True)
         print("Chatter Module: ONLINE")
-        print(f"Chatter contains {len(self.chats)} different chats")
-
-
-    @command(brief=f'Reload chats')
-    @has_role(owner)
-    async def reload_chats(self, ctx): # Display available role commands
-        self.load_chats()
-        await cmd_acknowledge(ctx)
-        print("Chatter: RELOADED")
-        print(f"Chatter contains {len(self.chats)} different chats")
-
 
     @Cog.listener()
     async def on_message(self, message):
@@ -90,3 +59,36 @@ class Chatter(Cog):
             await message.channel.send(response.format(user_mention=messageAuthor.name,
                                             server_mention=messageAuthor.guild.name,
                                             min=_min, max=_max, result=result))
+
+
+    @command(brief=f'Reload chats')
+    @has_role(owner)
+    async def chats(self, ctx): # Display available role commands
+        await self.load_chats()
+        await cmd_acknowledge(ctx)
+        print("Chatter: RELOADED")
+        print(f"Chatter contains {len(self.chats)} different chats")
+
+
+    async def load_chats(self, startup=False):
+        # Clear class vars
+        self.calls = []
+        self.calls_map = []
+
+        # load chats.json file
+        with open('config/chats.json') as chats_file:
+            chats_data = json.load(chats_file)
+            self.chats = chats_data["chats"]
+            self.always_respond_to_role_ids = chats_data["always_respond_to_role_ids"]
+
+        # map chat calls to index of chats
+        for i, chat in enumerate(self.chats):
+            for call in chat["call"]:
+                self.calls.append(call.lower())
+                self.calls_map.append(i)
+
+        description = f"New Chats loaded. Chatter contains {len(self.chats)} chats"
+        print(description)
+        if not startup:
+            embed = BotStatusEmbed(description=description)
+            await self.bot.get_channel(int(config["General"]["bot_info_channel_id"])).send(embed=embed, delete_after=15)

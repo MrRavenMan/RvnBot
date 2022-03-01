@@ -8,6 +8,7 @@ class WarningEmbed(Embed):
         super().__init__()
         self.colour = Colour.from_rgb(255, 175, 0)        
 
+
 class UserWarningEmbed(WarningEmbed):
     def __init__(self, user, offense, description, channel):
         super().__init__()
@@ -34,3 +35,11 @@ class UserWarningEmbed(WarningEmbed):
             in channel {self.channel.name} \n Description: {self.description} \n Reaction: {self.reaction} \n \
                 At time (UTC): {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}")
         print("---------------------------------------------")
+
+
+class BotWarningEmbed(WarningEmbed):
+    def __init__(self, warning_msg):
+        super().__init__()
+        self.colour = Colour.from_rgb(255, 89, 0)     
+        self.title = "**BOT WARNING**"
+        self.description = warning_msg

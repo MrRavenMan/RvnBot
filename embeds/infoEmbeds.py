@@ -8,6 +8,15 @@ class InfoEmbed(Embed):
         super().__init__()
         self.colour = Colour.from_rgb(0, 100, 255)
 
+
+class BotStatusEmbed(InfoEmbed):
+    def __init__(self, description):
+        super().__init__()
+        self.title = "Bot Info"
+        self.description = description
+        self.set_footer(text="This message wil auto-delete after 15 seconds")
+
+
 class JoinEmbed(InfoEmbed):
     def __init__(self, user):
         super().__init__()
