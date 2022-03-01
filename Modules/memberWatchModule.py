@@ -4,6 +4,10 @@ from discord.channel import DMChannel
 
 import re
 import json
+import datetime
+
+from embeds.warningEmbeds import UserWarningEmbed
+from embeds.infoEmbeds import JoinEmbed, LeaveEmbed
 
 
 class MemberWatch(Cog):
@@ -11,26 +15,21 @@ class MemberWatch(Cog):
         self.bot = client
         self.config = config
 
-        with open('config/memberWatchConfig/blacklist.json') as blacklist_file:
-            blacklist_data = json.load(blacklist_file)
-            dirty_blacklist = blacklist_data["blacklisted_words"]
-            self.whitelisted_role_ids = blacklist_data["whitelisted_role_ids"]
-
-        self.blacklist = []
-        for word in dirty_blacklist: # Clean blacklist so all words are lowercase str
-            self.blacklist.append(str(word.lower().replace("@", "add_")))
-
+        self.blacklist_words = []
+        self.blacklist_paragraphs = []
 
     @Cog.listener()
     async def on_ready(self):
         print("Member Watch Module: ONLINE")
-        print(f"Blacklist contains {len(self.blacklist)} blacklisted words")
-        print(f"{len(self.whitelisted_role_ids)} roles are whitelisted from the blacklist")
+        self.load_blacklist()
+
+        print(f"Blacklist contains {len(self.blacklist_words) + len(self.blacklist_paragraphs)} blacklisted words")
 
     @Cog.listener()
     async def on_member_join(self, member):
         print("member joined")
-        await self.bot.get_channel(int(self.config["join_msg_channel_id"])).send(f"{member.mention} has joined the server!")
+        embed = JoinEmbed(member)
+        await self.bot.get_channel(int(self.config["join_msg_channel_id"])).send(embed=embed)
 
         try:
             with open ("config/memberWatchConfig/welcome_dm.txt", "r") as myfile:
@@ -47,33 +46,121 @@ class MemberWatch(Cog):
     @Cog.listener()
     async def on_member_remove(self, member):
         print("member left")
-        await self.bot.get_channel(int(self.config["leave_msg_channel_id"])).send(f"**{member.name}#{member.discriminator}** has left the server!")
-
-    
-    def msg_contains_word(self, msg, word):
-        msg = msg.replace("@", "add_")
-        return re.search(fr'\b({word})\b', msg) is not None # returns True if bad word is in message
+        embed = LeaveEmbed(member)
+        await self.bot.get_channel(int(self.config["join_msg_channel_id"])).send(embed=embed)
 
     @Cog.listener()
     async def on_message(self, message):
         messageAuthor = message.author
-
+    
         if messageAuthor != self.bot.user: # check if message is by bot itself or whitelisted role
-            if self.blacklist != None and (isinstance(message.channel, DMChannel) == False) and not any(role.id in self.whitelisted_role_ids for role in messageAuthor.roles):
-                for bannedWord in self.blacklist:
-                    if self.msg_contains_word(message.content.lower(), bannedWord):
-                        await message.delete()
+            if (isinstance(message.channel, DMChannel) == False):
+                bannedItem = self.contains_blacklisted(message.content, messageAuthor)
+                if bannedItem is None: # Exit func if not banned item in msg
+                    return
 
-                        message.content = message.content.replace("@", "*@*") # Make sure bot doesn't tag everyone when sending admins blacklist msg
+                await message.delete()
+                message.content = message.content.replace("@", "*@*") # Make sure bot doesn't tag everyone when sending admins blacklist msg
+            
+                warning_embed = UserWarningEmbed(user=messageAuthor, offense="Use of blacklisted item", description=f"They said: '{message.content}'",
+                                        channel=message.channel)
 
-                        await self.bot.get_channel(int(self.config["blacklist_msg_channel_id"])) \
-                            .send(f'{messageAuthor.mention} used a blacklisted word in {message.channel.mention}. They said: "{message.content}"')
 
-                        if self.config["kick_on_blacklist"] == "True":
-                            try:
-                                await message.guild.kick(messageAuthor)
-                                await self.bot.get_channel(int(self.config["blacklist_msg_channel_id"])) \
-                                    .send(f'**{messageAuthor.mention}** is now kicked')
-                                print(f'Kicked userid {messageAuthor.id} for writing blacklisted word in {message.channel.mention}. They said: "{message.content}"')
-                            except MissingPermissions:
-                                print("BOT is lacking permission to kick members")
+                if bannedItem.warn_on_use:
+                    print("NOT IMPLEMENTED: SEND WARNING TO USER")
+                if bannedItem.kick_on_use:
+                    try:
+                        reason = f"{messageAuthor.name}#{messageAuthor.discriminator} has been kicked. \
+                        Reason: Wrote blacklisted word in {message.channel.mention}. {messageAuthor.name} said: {message.content}"
+                        await message.guild.kick(messageAuthor, reason=reason)
+                        warning_embed.add_reaction("User has been kicked")
+                        await self.bot.get_channel(int(self.config["blacklist_msg_channel_id"])).send(embed=warning_embed)
+                        warning_embed.print_warning_to_console()
+
+                    except MissingPermissions:
+                        print("BOT is lacking permission to kick members")
+                    return
+                if bannedItem.ban_on_use:
+                    try:
+                        reason = f"{messageAuthor.name}#{messageAuthor.discriminator} has been banned. \
+                        Reason: Wrote blacklisted word in {message.channel.mention}. {messageAuthor.name} said: {message.content}"
+                        await message.guild.ban(messageAuthor, reason=reason)
+                        warning_embed.add_reaction("User has been banned")
+                        await self.bot.get_channel(int(self.config["blacklist_msg_channel_id"])).send(embed=warning_embed)
+                        warning_embed.print_warning_to_console()
+                    except MissingPermissions:
+                        print("BOT is lacking permission to ban members")
+                    return
+                if bannedItem.timeout():
+                    reason = f"{messageAuthor.name}#{messageAuthor.discriminator} has gotten timeout until {(datetime.datetime.utcnow() + bannedItem.timeout_period).strftime('%Y-%m-%d %H:%M:%S')}. \
+                        Reason: Wrote blacklisted word in {message.channel.mention}. {messageAuthor.name} said: {message.content}"
+                    await messageAuthor.timeout_for(duration=bannedItem.timeout_period, reason=reason)
+
+                    warning_embed.add_reaction(f"User has been given timeout until {(datetime.datetime.utcnow() + bannedItem.timeout_period).strftime('%Y-%m-%d %H:%M:%S')}")
+                    await self.bot.get_channel(int(self.config["blacklist_msg_channel_id"])).send(embed=warning_embed)
+                    warning_embed.print_warning_to_console()
+                    return
+
+
+    def load_blacklist(self):
+        with open('config/memberWatchConfig/blacklist.json') as blacklist_file:
+            blacklists = json.load(blacklist_file)
+            # dirty_blacklist = blacklist_data["blacklisted_words"]
+            # self.whitelisted_role_ids = blacklist_data["whitelisted_role_ids"]
+        
+        self.blacklist_words = []
+        self.blacklist_paragraphs = []
+        for sub_blacklist in blacklists:
+            for item in sub_blacklist["blacklisted_items"]:
+                timeout_period = None
+                if int(sub_blacklist["timeout_minutes"]) != 0:
+                    timeout_period = datetime.timedelta(minutes=int(sub_blacklist["timeout_minutes"]))
+
+                blacklisted_item = BlacklistedItem(word=item,
+                                        timeout_period=timeout_period,
+                                        kick_on_use=bool(sub_blacklist["kick_on_use"]),
+                                        ban_on_use=bool(sub_blacklist["ban_on_use"]),
+                                        warn_on_use=bool(sub_blacklist["warn_on_use"]),
+                                        full_word=bool(sub_blacklist["full_word"]),
+                                        whitelisted_role_ids=sub_blacklist["whitelisted_role_ids"],
+                                        )
+
+                if blacklisted_item.full_word is True:
+                    self.blacklist_words.append((blacklisted_item))
+                else:
+                    self.blacklist_paragraphs.append(blacklisted_item)
+            
+
+    def msg_contains_word(self, msg, word):
+        msg = msg.replace("@", "add_")
+        return re.search(fr'\b({word})\b', msg) is not None # returns True if bad word is in message
+
+
+    def contains_blacklisted(self, msg, author):
+        for bannedWord in self.blacklist_words:
+            if self.msg_contains_word(msg.lower(), bannedWord.word):
+                if not any(role.id in bannedWord.whitelisted_role_ids for role in author.roles):
+                    return bannedWord
+        for bannedPhrase in self.blacklist_paragraphs:
+            if bannedPhrase.word in msg:
+                if not any(role.id in bannedWord.whitelisted_role_ids for role in author.roles):
+                    return bannedPhrase
+        return None
+
+
+class BlacklistedItem():
+    def __init__(self, word: str = "", timeout_period: datetime.timedelta = None, kick_on_use: bool = False,
+     ban_on_use: bool = False, warn_on_use: bool = True, full_word: bool = True, whitelisted_role_ids = []):
+        self.word = str(word.lower().replace("@", "add_"))
+        self.timeout_period = timeout_period
+        self.kick_on_use = kick_on_use
+        self.ban_on_use = ban_on_use
+        self.warn_on_use = warn_on_use
+        self.full_word = full_word
+        self.whitelisted_role_ids = whitelisted_role_ids
+
+    def timeout(self) -> bool:
+        if self.timeout_period is None:
+            return False
+        return True
+

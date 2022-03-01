@@ -1,12 +1,49 @@
-{
-    "whitelisted_role_ids": [854340374138716180, 853692936465940501],
-    "blacklisted_words": [
-        "Testingword1",
-        "Testingword2",
-        "john1",
-        "bob",
-        "jacob",
-        "jake6",
-        "@everyone"
-    ]
-}
+[
+    {
+        "timeout_minutes": 0,
+        "kick_on_use": false,
+        "ban_on_use": false,
+        "warn_on_use": true,
+        "full_word": true,
+        "whitelisted_role_ids": [854340374138716180, 853692936465940501],
+        "blacklisted_items": [
+            "jake6",
+            "@everyone"
+        ]
+    },
+    {
+        "timeout_minutes": 0,
+        "kick_on_use": false,
+        "ban_on_use": true,
+        "warn_on_use": false,
+        "full_word": true,
+        "whitelisted_role_ids": [854340374138716180, 853692936465940501],
+        "blacklisted_items": [
+            "fuck you"
+        ]
+    },
+    {
+        "timeout_minutes": 0,
+        "kick_on_use": true,
+        "ban_on_use": false,
+        "warn_on_use": false,
+        "full_word": false,
+        "whitelisted_role_ids": [854340374138716180, 853692936465940501],
+        "blacklisted_items": [
+            "discord.scam",
+            "scammersarepricks.com"
+        ]
+    },
+    {
+        "timeout_minutes": 15,
+        "kick_on_use": false,
+        "ban_on_use": false,
+        "warn_on_use": false,
+        "full_word": true,
+        "whitelisted_role_ids": [854340374138716180, 853692936465940501],
+        "blacklisted_items": [
+            "bob",
+            "john"
+        ]
+    }
+]

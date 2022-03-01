@@ -20,12 +20,6 @@ class Assigner(commands.Cog):
         self.config = config
         self.btns_on = True # If true, buttons are already activated
 
-        with open ("config/roleAssignerConfig/role_btn_msg.txt", "r") as myfile:
-            data=myfile.readlines()
-        self.role_btn_msg = ""
-        for i in data:
-            self.role_btn_msg += i
-
 
     def listen_for_butttons(self):  # Goes through all assignable roles and listens 
         for guild in self.bot.guilds: # for role assignment button clicks for each role
@@ -116,38 +110,6 @@ class Assigner(commands.Cog):
         view = RoleButtonSetupView(roles)
         
         await ctx.respond("Pick role for role assignment buttons:", view=view, delete_after=10)
-
-        
-
-
-    @commands.command(brief=f'Buttons for assigning/unassigning Role 1')
-    @commands.has_role(owner)
-    async def role(self, ctx):
-        role_id = int(ctx.message.content.replace("!role", "").replace("<@&", "").replace(">", ""))
-        role = ctx.guild.get_role(role_id)
-        
-        print(f'Adding button for {role.name}')
-        view = RoleAssignmentView(role)
-    
-        if self.config.getboolean("role_btn_tag_later") is True: # Avoids the mention of a role, tagging the whole role
-            msg = await ctx.send("Generating button, please hold...")
-            await asyncio.sleep(0.7)
-            await msg.edit(
-                content=self.role_btn_msg.format(role_mention=role.mention,
-                                        faq_channel=ctx.guild.get_channel(int(self.config["faq_channel_id"])).mention),
-                view=view
-            )
-            await ctx.message.delete()
-        elif self.config.getboolean("role_btn_tag_later") is False:
-            await ctx.send(
-                content=self.role_btn_msg.format(role_mention=role.mention,
-                                        faq_channel="FIX THIS"),
-                view=view
-            )
-        else:
-            print("ATTENTION: ERROR: Config [Assigner]role_btn_tag_later is invalid. Must be set to True/False!")
-
-        await cmd_acknowledge(ctx)
 
 
     @commands.command(brief=f'Buttons for assigning/unassigning all roles with one click')

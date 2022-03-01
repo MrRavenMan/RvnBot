@@ -40,12 +40,6 @@ def main():
     else:
         print("Chatter: OFF - not enabled in config")
 
-    if config.getboolean("General", "enable_MusicPlayer"):
-        from music_player import MusicPlayer
-        client.add_cog(MusicPlayer(client))
-    else:
-        print("Music Player: OFF - not enabled in config")
-
 
     client.run(TOKEN)
 
