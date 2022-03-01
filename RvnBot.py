@@ -23,7 +23,7 @@ def main():
     client.add_cog(General(client, config["General"]))
 
     if config.getboolean("General", "enable_Assigner"):
-        from assigner import Assigner
+        from modules.roleAssignerModule import Assigner
         client.add_cog(Assigner(client, config['Assigner']))
     else:
         print("Assigner: OFF - not enabled in config")

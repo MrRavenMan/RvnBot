@@ -1,0 +1,3 @@
+
+**This role is for {role_mention} of the community {faq_channel}**
+This message is configued in the conf/role_btn_msg.txt file and will appear in front of all role asssign/unassign buttons
