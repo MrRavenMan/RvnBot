@@ -71,7 +71,7 @@ class MemberWatch(Cog):
                 if bannedItem.kick_on_use:
                     try:
                         reason = f"{messageAuthor.name}#{messageAuthor.discriminator} has been kicked. \
-                        Reason: Wrote blacklisted word in {message.channel.mention}. {messageAuthor.name} said: {message.content}"
+                        Reason: Wrote blacklisted word in {message.channel.name}. {messageAuthor.name} said: {message.content}"
                         await message.guild.kick(messageAuthor, reason=reason)
                         warning_embed.add_reaction("User has been kicked")
                         await self.bot.get_channel(int(self.config["blacklist_msg_channel_id"])).send(embed=warning_embed)
@@ -83,7 +83,7 @@ class MemberWatch(Cog):
                 if bannedItem.ban_on_use:
                     try:
                         reason = f"{messageAuthor.name}#{messageAuthor.discriminator} has been banned. \
-                        Reason: Wrote blacklisted word in {message.channel.mention}. {messageAuthor.name} said: {message.content}"
+                        Reason: Wrote blacklisted word in {message.channel.name}. {messageAuthor.name} said: {message.content}"
                         await message.guild.ban(messageAuthor, reason=reason)
                         warning_embed.add_reaction("User has been banned")
                         await self.bot.get_channel(int(self.config["blacklist_msg_channel_id"])).send(embed=warning_embed)
@@ -93,7 +93,7 @@ class MemberWatch(Cog):
                     return
                 if bannedItem.timeout():
                     reason = f"{messageAuthor.name}#{messageAuthor.discriminator} has gotten timeout until {(datetime.datetime.utcnow() + bannedItem.timeout_period).strftime('%Y-%m-%d %H:%M:%S')}. \
-                        Reason: Wrote blacklisted word in {message.channel.mention}. {messageAuthor.name} said: {message.content}"
+                        Reason: Wrote blacklisted word in {message.channel.name}. {messageAuthor.name} said: {message.content}"
                     await messageAuthor.timeout_for(duration=bannedItem.timeout_period, reason=reason)
 
                     warning_embed.add_reaction(f"User has been given timeout until {(datetime.datetime.utcnow() + bannedItem.timeout_period).strftime('%Y-%m-%d %H:%M:%S')}")

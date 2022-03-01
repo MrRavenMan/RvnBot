@@ -6,9 +6,7 @@ from datetime import datetime
 class WarningEmbed(Embed):
     def __init__(self):
         super().__init__()
-        self.colour = Colour.from_rgb(255, 175, 0)
-        self.timestamp = datetime.utcnow()
-        
+        self.colour = Colour.from_rgb(255, 175, 0)        
 
 class UserWarningEmbed(WarningEmbed):
     def __init__(self, user, offense, description, channel):
@@ -34,5 +32,5 @@ class UserWarningEmbed(WarningEmbed):
         print("------------------- USER WARNING --------------------------")
         print(f"{self.user.name}#{self.user.discriminator} has committed offense: {self.offense} \n \
             in channel {self.channel.name} \n Description: {self.description} \n Reaction: {self.reaction} \n \
-                At time: {self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
+                At time (UTC): {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')}")
         print("---------------------------------------------")
