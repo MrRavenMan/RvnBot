@@ -1,15 +1,14 @@
-import json
-import time
 import configparser
 import asyncio
 
-from discord import Member, ButtonStyle
+from discord import Member
 from discord.ext import commands
-#from discord_components import Button, ButtonStyle, InteractionType, component
-from discord.ui import Button
 
 from helpers.command_helpers import cmd_acknowledge
-from views.roleAssignmentViews import RoleAssignmentView, MultiRoleAssignmentView
+from views.roleButtonView import RoleAssignmentView, MultiRoleAssignmentView
+from views.roleButtonSetupView import RoleButtonSetupView
+
+
 config = configparser.ConfigParser()
 config.read("config/config.ini")
 owner = config["General"]["manager_role"]
@@ -26,6 +25,14 @@ class Assigner(commands.Cog):
         self.role_btn_msg = ""
         for i in data:
             self.role_btn_msg += i
+
+
+    def listen_for_butttons(self):  # Goes through all assignable roles and listens 
+        for guild in self.bot.guilds: # for role assignment button clicks for each role
+            for role in guild.roles:
+                print(role.id, role.name, role.is_assignable())
+                if role.is_assignable():
+                    self.bot.add_view(RoleAssignmentView(role))
 
 
     @commands.Cog.listener()  
@@ -100,12 +107,17 @@ class Assigner(commands.Cog):
         print("Error loading special role 3 or/and special role 3 admin")
 
 
-    def listen_for_butttons(self):  # Goes through all assignable roles and listens 
-        for guild in self.bot.guilds: # for role assignment button clicks for each role
-            for role in guild.roles:
-                print(role.id, role.name, role.is_assignable())
-                if role.is_assignable():
-                    self.bot.add_view(RoleAssignmentView(role))
+    @commands.slash_command(guild_ids=[947106474235158548], name="roles")
+    async def roles(self, ctx):
+        roles = []
+        for role in ctx.guild.roles:
+            if role.is_assignable():
+                roles.append(role)
+        view = RoleButtonSetupView(roles)
+        
+        await ctx.respond("Pick role for role assignment buttons:", view=view, delete_after=10)
+
+        
 
 
     @commands.command(brief=f'Buttons for assigning/unassigning Role 1')
@@ -139,7 +151,7 @@ class Assigner(commands.Cog):
 
 
     @commands.command(brief=f'Buttons for assigning/unassigning all roles with one click')
-    @commands.has_role(owner)
+    @commands.has_role(owner) # WORK IN PROGRESS
     async def role_all(self, ctx):  # Button for picking all roles with one click
         roles = []
         cmd_input = ctx.message.content.replace("!role_all", "").replace("<@&", "").replace(">", "") # Clean input to a list of role ids
@@ -161,4 +173,4 @@ class Assigner(commands.Cog):
         )
 
         await cmd_acknowledge(ctx)
-        
+

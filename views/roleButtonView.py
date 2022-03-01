@@ -5,20 +5,20 @@ from helpers.role_assignment import assign, unassign, invert
 
 
 class RoleAssignmentView(View):  # Persistent view for assigning single role with btns
-        def __init__(self, role):
+        def __init__(self, role, assign_btn_label = "Assign Role", unassign_btn_label = "Unassign Role"):
             super().__init__(timeout=None)
-            
-            join_btn = self.JoinRoleButton(role)
-            leave_btn = self.LeaveRoleButton(role)
+
+            join_btn = self.JoinRoleButton(role, assign_btn_label)
+            leave_btn = self.LeaveRoleButton(role, unassign_btn_label)
 
             self.add_item(join_btn)
             self.add_item(leave_btn)
 
 
         class JoinRoleButton(Button):
-            def __init__(self, role):
+            def __init__(self, role, assign_btn_label):
                 id = f"J{str(role.id)}"
-                super().__init__(label="Assign Role", style=ButtonStyle.green, custom_id=id)
+                super().__init__(label=assign_btn_label, style=ButtonStyle.green, custom_id=id)
                 self.role = role
 
             async def callback(self, interaction):
@@ -29,9 +29,9 @@ class RoleAssignmentView(View):  # Persistent view for assigning single role wit
 
 
         class LeaveRoleButton(Button):
-            def __init__(self, role):
+            def __init__(self, role, unassign_btn_label):
                 id = f"L{str(role.id)}"
-                super().__init__(label="Unassign Role", style=ButtonStyle.red,  custom_id=id)
+                super().__init__(label=unassign_btn_label, style=ButtonStyle.red,  custom_id=id)
                 self.role = role
 
             async def callback(self, interaction):
