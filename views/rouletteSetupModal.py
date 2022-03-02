@@ -20,7 +20,7 @@ class RouletteSetupModal(Modal):
             self.roulette_btn_label = "Play roulette!"
             
             self.add_item(InputText(label="Button description", placeholder=self.description, style=discord.InputTextStyle.long, required=False))
-            self.add_item(InputText(label="Roulette button text", placeholder=self.roulette_btn_label, required=False))
+            self.add_item(InputText(label="Roulette button label", placeholder=self.roulette_btn_label, required=False))
 
 
         async def callback(self, interaction: discord.Interaction):
