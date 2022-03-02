@@ -5,33 +5,16 @@ from discord.ui import InputText, Modal
 
 from views.roleButtonView import RoleAssignmentView
 
+
 config = configparser.ConfigParser()
 config.read("config/config.ini")
 owner = config["General"]["manager_role"]
 
 
-class RoleDropdown(discord.ui.Select):
-        def __init__(self, roles):
-            options = []
-            self.roles = roles
-            for idx, role in enumerate(self.roles):
-                    options.append(discord.SelectOption(label=role.name, description="Make assignment buttons for this role", value=idx))
-            super().__init__(
-                placeholder="Choose role for assignment button...",
-                min_values=1,
-                max_values=1,
-                options=options,
-            )
-        
-        async def callback(self, interaction: discord.Interaction):
-            modal = RoleAssignButtonModal(roles=self.roles[int(self.values[0])])
-            await interaction.response.send_modal(modal)
-
-
 class RoleAssignButtonModal(Modal):
-        def __init__(self, roles) -> None:
+        def __init__(self, role) -> None:
             super().__init__("Button description")
-            self.roles = roles
+            self.role = role
             self.description = "**This role is for {role_mention} of the community {faq_channel}**"
             self.assign_btn_label = "Assign Role"
             self.unassign_btn_label = "Unassign Role"
@@ -41,7 +24,7 @@ class RoleAssignButtonModal(Modal):
             self.add_item(InputText(label="Unassign button text", placeholder=self.unassign_btn_label, required=False))
 
         async def callback(self, interaction: discord.Interaction):
-            role = self.roles
+            role = self.role
             if self.children[0].value is not None:
                 self.description = self.children[0].value
             if self.children[1].value is not None:
@@ -58,10 +41,3 @@ class RoleAssignButtonModal(Modal):
                     view=view
                 )
             await interaction.response.send_message("Buttons generated...", delete_after=3)
-
-
-class RoleButtonSetupView(discord.ui.View):
-        def __init__(self, roles):
-            super().__init__()
-            # Adds the dropdown to our view object.
-            self.add_item(RoleDropdown(roles))
