@@ -8,6 +8,7 @@ RavenBot has multiple commands that help discord servers assign and unassign use
 
 #### Role assignment buttons:
 `/role @ROLE`  generates a button for assigning the selected role, and a button unassigning the role. 
+On command, a modal with options to customize a description before the buttons and the button labels will pop up.
 The buttons may be used by everyone on the discord server to assign/unassign the wished role.
 
 ![Button Example](https://user-images.githubusercontent.com/61353115/156388445-1645f3a8-1580-49c7-9852-8a253016a213.png)
@@ -51,7 +52,8 @@ Real example of assigner_roles.json:
 `/remove_role @ROLE @USER` removes the selected role from the selected user
 
 
-### Blacklist
+
+### Blacklist feature
 RavenBot has blacklist functionality that allows a multiple blacklists to be defined.
 Blacklists are defined in config/blacklist.json
 
@@ -102,7 +104,78 @@ Note: Regardsless of what punishment is enabled, RavenBot will remove the messag
 `blacklisted_items`: List of items blacklisted. (Note: capital letters do not matter)
 
 
-`/blacklist` Command to reload blacklist (Use when changes have been made to blacklist.json, if bot has not been restarted)
+`/blacklist` Command to reload blacklist (Use when changes have been made to blacklist.json)
+
+
+
+### Chatter feature
+Allows predefined chats to be defined to make RavenBot feel more human/inteligent. These chats can be defined in config/chats.json
+chats.json must follow the format of the example below. chats.json must be a object with fields:
+
+"always_respond_to_role_ids": List of role ids (int) that the chatter will always respond.
+
+"chats" List of chat objects that contain the following fields:
+    "call" List of strings. These are the calls that will prompt a repsonse. 
+    "response" List of strings. Possible responses (Will be picked randomly). Use {user_mention} to tag the user that has made the call
+    "probability" Float (Must be between 0.1 and 1). Chance of RavenBot reacting on call and typing a response.
+    
+See dice example in example below for special dice functionality.
+    
+```json
+{
+    "always_respond_to_role_ids": [854340374138716180, 853692936465940501],
+    "chats": [
+        {
+            "call": ["good morning", "morning", "morning!"],
+            "response": ["Good morning dude!", "Good morning {user_mention}"],
+            "probability": 0.8
+        },
+        {
+            "call": ["good night"],
+            "response": ["Night dude!", "Fuck off {user_mention}. You do not belong in **{server_mention}**"],
+            "probability": 0.1
+        },
+        {
+            "call": ["Roll a dice"],
+            "response": ["You got {result}", "I rolled a dice with numbers between {min} and {max}. I got {result}"],
+            "probability": 0.8,
+            "min": 1,
+            "max": 9
+        }
+    ]
+}
+```
+
+`/chats` Command to reload chats if chats.json has been updated
+
+`/roulette` Command to spawn a button which will prompt a response or timeout as defined in config/roulette.json to the user clicking the button. 
+On command, a modal with options to customize button description and label will pop up.
+The button may be used by everyone.
+
+config/roulette.json must follow format of example below. Define a list of objects, where each object has a response field (str) and a timeout field (int).
+"timeout" can be set to 0 to not give a timeout. 
+On button click, RavenBot will pick a random roulette item for the user and send a message to the user in the buttons channel with the response as text, and time them out if timeout is more than 0. Timeout must be an int and represents the timeout in minutes.
+```json
+[
+    {
+        "response": "When live gives you lemons, eat shit!",
+        "timeout": 0
+    },
+    {
+        "response": "You talk too much - Now be quiet for the next minute!",
+        "timeout": 1
+    }
+]
+```
+
+
+### Other commands
+`/test` Command to test if bot is online. Will prompt a short response from RavenBot
+
+`/close` Command to shut down RavenBot
+
+`!message` or `!msg`. Command to write a message, that RavenBot will write in same channel. Can be used to make RavenBot write a message or send a picture in a channel. 
+Type !message or !msg followed by the text or pictures you want RavenBot to send in the channel.
 
 
 
