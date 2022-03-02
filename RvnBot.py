@@ -15,7 +15,7 @@ def main():
 
     TOKEN = config["General"]["TOKEN"]
 
-    client = commands.Bot(command_prefix='!', intents=intents)
+    client = commands.Bot(ncommand_prefix='!', intents=intents)
 
     """ Load modules """
     # Start modules as specified in config

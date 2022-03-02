@@ -42,8 +42,8 @@
         "full_word": true,
         "whitelisted_role_ids": [854340374138716180, 853692936465940501],
         "blacklisted_items": [
-            "bob",
-            "john"
+            "john",
+            "Jib"
         ]
     }
 ]

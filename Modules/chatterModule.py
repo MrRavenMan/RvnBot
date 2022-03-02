@@ -2,7 +2,7 @@ import random
 import json
 import configparser
 
-from discord.ext.commands import Cog, command, has_role
+from discord.ext.commands import Cog, slash_command, has_role
 
 from helpers.command_helpers import cmd_acknowledge
 from embeds.infoEmbeds import BotStatusEmbed
@@ -61,16 +61,14 @@ class Chatter(Cog):
                                             min=_min, max=_max, result=result))
 
 
-    @command(brief=f'Reload chats')
+    slash_command(name="chats", description=f'Reload chats')
     @has_role(owner)
-    async def chats(self, ctx): # Display available role commands
+    async def chats(self, ctx): # Reload chats command - calls load_chats func
         await self.load_chats()
-        await cmd_acknowledge(ctx)
+        await ctx.interaction.response.send_message(content=f"Chats reloaded", delete_after=5)
         print("Chatter: RELOADED")
-        print(f"Chatter contains {len(self.chats)} different chats")
 
-
-    async def load_chats(self, startup=False):
+    async def load_chats(self, startup=False): # Reload chats function
         # Clear class vars
         self.calls = []
         self.calls_map = []

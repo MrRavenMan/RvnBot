@@ -1,10 +1,11 @@
 import configparser
 import discord
 
-from discord.ext.commands import Cog, command, has_role
+from discord.ext.commands import Cog, slash_command, has_role, command
 
 from helpers.status import set_status
 from helpers.command_helpers import cmd_acknowledge
+from embeds.infoEmbeds import BotStatusEmbed
 
 config = configparser.ConfigParser()
 config.read("config/config.ini")
@@ -23,23 +24,28 @@ class General(Cog):
 
         await set_status(client=self.bot, status=self.config["status"], status_msg=self.config["status_message"], 
                         status_streaming_url=self.config["status_streaming_url"])
-        print(f'{self.config["bot_name"]} has logged in as {self.bot.user}') # Display online in console
 
+        description = f"{self.bot.user} has logged in and is now online!"
+        print(description)
+        embed = BotStatusEmbed(description=description)
+        await self.bot.get_channel(int(config["General"]["bot_info_channel_id"])).send(embed=embed, delete_after=15)
+        
 
     """ Utility commands """
-    @command(brief="Test if bot is online")  # Command to test if bot is online
+    @slash_command(name="test", description="Test if bot is online")  # Command to test if bot is online
     @has_role(config["General"]["manager_role"])
     async def test(self, ctx,):
-        await ctx.message.channel.send('I am online :D')
-        await cmd_acknowledge(ctx)
+        await ctx.interaction.response.send_message(content=f"I am online!", delete_after=5)
 
-
-    @command(aliases=["quit"], brief='Shut down bot')  # Command to shut down the bot
+    @slash_command(name="close", description='Shut down bot')  # Command to shut down the bot
     @has_role(config["General"]["manager_role"])
     async def close(self, ctx):
+        description = f"Shutting bot down."
+        print(description)
+        embed = BotStatusEmbed(description=description)
+        await self.bot.get_channel(int(config["General"]["bot_info_channel_id"])).send(embed=embed, delete_after=15)
+        await ctx.interaction.response.send_message(content=description, delete_after=5)
         await self.bot.close()
-        print("Bot shutting down")
-        await cmd_acknowledge(ctx)
 
     @command(aliases=["msg"], brief='Make bot send message in chat')  # Command to shut down the bot
     @has_role(config["General"]["manager_role"])
@@ -50,23 +56,4 @@ class General(Cog):
         if len(ctx.message.attachments) > 0:
             for i in range(len(ctx.message.attachments)):
                 await ctx.send(ctx.message.attachments[i].url)
-        await cmd_acknowledge(ctx)
-
-
-    @command(brief="Add role")
-    @has_role(config["General"]["manager_role"])  # Add role using commmand
-    async def add_role(self, ctx, role: discord.Role, user: discord.Member):
-        if ctx.author.guild_permissions.administrator:
-            await user.add_roles(role)
-            await ctx.send(f"Successfully given {role.mention} to {user.mention}.")
-            print(f"Successfully given {role.mention} to {user.mention}.")
-        await cmd_acknowledge(ctx)
-
-    @command(brief="Removes role")
-    @has_role(config["General"]["manager_role"])  # Remove role using commmand
-    async def remove_role(self, ctx, role: discord.Role, user: discord.Member):
-        if ctx.author.guild_permissions.administrator:
-            await user.remove_roles(role)
-            await ctx.send(f"Successfully removed {role.mention} from {user.mention}.")
-            print(f"Successfully removed {role.mention} from {user.mention}.")
         await cmd_acknowledge(ctx)

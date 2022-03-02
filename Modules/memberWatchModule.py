@@ -1,5 +1,5 @@
 from discord import Forbidden
-from discord.ext.commands import Cog, MissingPermissions, command, has_role
+from discord.ext.commands import Cog, MissingPermissions, slash_command, has_role
 from discord.channel import DMChannel
 
 import re
@@ -104,11 +104,11 @@ class MemberWatch(Cog):
                         print(f"BOT is lacking permission act against user {messageAuthor.name}#{messageAuthor.discriminator}")
 
 
-    @command(brief="Reload blacklist")  # Command to reload blacklist
+    @slash_command(name="blacklist", description=f'Reload blacklist')  # Command to reload blacklist
     @has_role(config["General"]["manager_role"])
     async def blacklist(self, ctx,):
         await self.load_blacklist()
-        await cmd_acknowledge(ctx)
+        await ctx.interaction.response.send_message(content=f"Blacklist reloaded", delete_after=5)
 
 
     async def load_blacklist(self, startup=False): # Set startup to True if called by on_ready
