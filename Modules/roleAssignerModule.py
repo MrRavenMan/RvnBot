@@ -7,7 +7,7 @@ from discord.ext.commands import Cog, has_role, slash_command
 
 from helpers.command_helpers import cmd_acknowledge
 from views.roleButtonView import RoleAssignmentView
-from views.roleButtonSetupView import RoleAssignButtonModal
+from views.roleButtonSetupModal import RoleAssignButtonModal
 from views.roleAssignerDropdownView import RoleAssignerView
 
 config = configparser.ConfigParser()

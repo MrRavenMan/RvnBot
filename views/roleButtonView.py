@@ -25,7 +25,7 @@ class RoleAssignmentView(View):  # Persistent view for assigning single role wit
                 await assign(interaction.user, self.role)
 
             async def on_error(self, error, item, interaction):
-                await interaction.response.send_msg(str(error))
+                await interaction.response.send_message(str(error))
 
 
         class LeaveRoleButton(Button):
@@ -38,4 +38,4 @@ class RoleAssignmentView(View):  # Persistent view for assigning single role wit
                 await unassign(interaction.user, self.role)
             
             async def on_error(self, error, item, interaction):
-                await interaction.response.send_msg(str(error))
+                await interaction.response.send_message(str(error))

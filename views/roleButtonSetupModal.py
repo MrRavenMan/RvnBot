@@ -15,6 +15,7 @@ class RoleAssignButtonModal(Modal):
         def __init__(self, role) -> None:
             super().__init__("Button description")
             self.role = role
+            
             self.description = "**This role is for {role_mention} of the community {faq_channel}**"
             self.assign_btn_label = "Assign Role"
             self.unassign_btn_label = "Unassign Role"
@@ -40,4 +41,4 @@ class RoleAssignButtonModal(Modal):
                         faq_channel=interaction.guild.get_channel(int(config["Assigner"]["faq_channel_id"])).mention),
                     view=view
                 )
-            await interaction.response.send_message("Buttons generated...", delete_after=3)
+            await interaction.response.send_message("Buttons generated...", delete_after=1)
