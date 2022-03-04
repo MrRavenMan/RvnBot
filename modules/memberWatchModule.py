@@ -27,8 +27,9 @@ class MemberWatch(Cog):
     @Cog.listener()
     async def on_member_join(self, member):
         print(f"member {member.name}#{member.discriminator} joined")
-        embed = JoinEmbed(member)
-        await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(embed=embed)
+        # embed = JoinEmbed(member)
+        # await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(embed=embed)
+        await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(content=f":green_circle:{member.mention} has joined the server.")
 
         try:
             with open ("config/memberWatchConfig/welcome_dm.txt", "r") as myfile:
@@ -44,8 +45,9 @@ class MemberWatch(Cog):
     @Cog.listener()
     async def on_member_remove(self, member):
         print(f"member {member.name}#{member.discriminator} left")
-        embed = LeaveEmbed(member)
-        await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(embed=embed)
+        # embed = LeaveEmbed(member)
+        # await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(embed=embed)
+        await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(content=f":red_circle:{member.mention} has left the server.")
 
     @Cog.listener()
     async def on_message(self, message):
