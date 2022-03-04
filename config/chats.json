@@ -3,12 +3,12 @@
     "chats": [
         {
             "call": ["good morning", "morning", "morning!"],
-            "response": ["Good morning dude!", "Good morning {user_mention}", "Fuck off!"],
+            "response": ["Good morning dude!", "Good morning {user_mention}"],
             "probability": 0.8
         },
         {
             "call": ["good night"],
-            "response": ["Night dude!", "Fuck off {user_mention}. You do not belong in **{server_mention}**"],
+            "response": ["Night dude!", "Get outta here {user_mention}. You do not belong in **{server_mention}**"],
             "probability": 0.1
         },
         {

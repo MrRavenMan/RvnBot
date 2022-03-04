@@ -7,8 +7,7 @@
         "full_word": true,
         "whitelisted_role_ids": [854340374138716180, 853692936465940501],
         "blacklisted_items": [
-            "jake6",
-            "@everyone"
+            "sayThisWordToBeWarned!"
         ]
     },
     {
@@ -19,7 +18,8 @@
         "full_word": true,
         "whitelisted_role_ids": [854340374138716180, 853692936465940501],
         "blacklisted_items": [
-            "fuck you"
+            "sayThisWordToBeBanned",
+            "orThisWordToBeBanned"
         ]
     },
     {
@@ -30,8 +30,7 @@
         "full_word": false,
         "whitelisted_role_ids": [854340374138716180, 853692936465940501],
         "blacklisted_items": [
-            "discord.scam",
-            "scammersarepricks.com"
+            "ifThisWordIsInASentenceYouGetKicked"
         ]
     },
     {
@@ -42,8 +41,7 @@
         "full_word": true,
         "whitelisted_role_ids": [854340374138716180, 853692936465940501],
         "blacklisted_items": [
-            "john",
-            "Jib"
+            "sayThisWordToGetTimeoutFor15Minutes"
         ]
     }
 ]

@@ -23,13 +23,13 @@ class General(Cog):
         print(description)
         embed = BotStatusEmbed(description=description)
         await self.bot.get_channel(int(config["General"]["bot_info_channel_id"])).send(embed=embed, delete_after=15)
-        
+    
 
     """ Utility commands """
     @slash_command(name="test", description="Test if bot is online")  # Command to test if bot is online
     @has_any_role(admin, config["General"]["manage_test"])
     async def test(self, ctx,):
-        await ctx.interaction.response.send_message(content=f"I am online!", delete_after=5)
+        await ctx.interaction.response.send_message(content=f"I am online!", delete_after=3)
 
     @slash_command(name="close", description='Shut down bot')  # Command to shut down the bot
     @has_any_role(admin, config["General"]["manage_close"])
@@ -37,8 +37,8 @@ class General(Cog):
         description = f"Shutting bot down."
         print(description)
         embed = BotStatusEmbed(description=description)
-        await self.bot.get_channel(int(config["General"]["bot_info_channel_id"])).send(embed=embed, delete_after=15)
-        await ctx.interaction.response.send_message(content=description, delete_after=5)
+        await self.bot.get_channel(int(config["General"]["bot_info_channel_id"])).send(embed=embed, delete_after=10)
+        await ctx.interaction.response.send_message(content=description, delete_after=3)
         await self.bot.close()
 
     @command(aliases=["msg"], brief='Make bot send message in chat')  # Command to shut down the bot

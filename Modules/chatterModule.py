@@ -18,7 +18,6 @@ class Chatter(Cog):
         self.chats_ = []
         self.roulette_options = []
         
-
     @Cog.listener()
     async def on_ready(self):
         await self.load_chats(startup=True)
@@ -62,21 +61,21 @@ class Chatter(Cog):
     @has_any_role(admin, config["Chatter"]["manage_chats"])
     async def chats(self, ctx): # Reload chats command - calls load_chats func
         await self.load_chats()
-        await ctx.interaction.response.send_message(content=f"Chats reloaded!", delete_after=5)
+        await ctx.interaction.response.send_message(content=f"Chats reloaded!", delete_after=3)
         print("Chatter: RELOADED")
 
     @slash_command(name="roulette_reload", description=f'Reload roulette options')
     @has_any_role(admin, config["Chatter"]["manage_roulette_reload"])
     async def roulette_reload(self, ctx): # Reload roulette options command - calls load_roulette func
         await self.load_roulette()
-        await ctx.interaction.response.send_message(content=f"Roulette options reloaded!", delete_after=5)
+        await ctx.interaction.response.send_message(content=f"Roulette options reloaded!", delete_after=3)
 
     @slash_command(name="roulette", description=f'Make roulette button')
     @has_any_role(admin, config["Chatter"]["manage_roulette"])
     async def roulette(self, ctx): # Reload chats command - calls load_chats func
         modal = RouletteSetupModal(roulette_options=self.roulette_options)
         await ctx.interaction.response.send_modal(modal=modal)
-    
+
 
     async def load_roulette(self, startup=False): # Reload roulette options
         with open('config/roulette.json') as roulette_file:

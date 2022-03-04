@@ -93,15 +93,14 @@ class MemberWatch(Cog):
                         warning_embed.print_warning_to_console()
                         return
                 except Forbidden:
-                        print(f"BOT is lacking permission act against user {messageAuthor.name}#{messageAuthor.discriminator} \
+                        print(f"BOT is lacking permissions to act against user {messageAuthor.name}#{messageAuthor.discriminator} \
                         They used blacklisted phrase: '{message.content}' in {message.channel.name}")
 
     @slash_command(name="blacklist", description=f'Reload blacklist')  # Command to reload blacklist
     @has_any_role(admin, config["MemberWatch"]["manage_blacklist"])
     async def blacklist(self, ctx,):
         await self.load_blacklist()
-        await ctx.interaction.response.send_message(content=f"Blacklist reloaded", delete_after=5)
-
+        await ctx.interaction.response.send_message(content=f"Blacklist reloaded", delete_after=3)
 
     async def load_blacklist(self, startup=False): # Set startup to True if called by on_ready
         with open('config/memberWatchConfig/blacklist.json') as blacklist_file:

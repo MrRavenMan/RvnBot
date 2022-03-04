@@ -26,4 +26,4 @@ class RouletteSetupModal(Modal):
             view = RouletteButtonView(roulette_options=self.roulette_options, roulette_btn_label=self.roulette_btn_label)
             await interaction.channel.send(content=self.description, view=view)
 
-            await interaction.response.send_message("Button generated...", delete_after=1)
+            await interaction.response.send_message("Button generated...", delete_after=0.1)

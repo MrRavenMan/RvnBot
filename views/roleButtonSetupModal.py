@@ -33,4 +33,4 @@ class RoleAssignButtonModal(Modal):
                     content=self.description.format(role_mention=role.mention),
                     view=view
                 )
-            await interaction.response.send_message("Buttons generated...", delete_after=1)
+            await interaction.response.send_message("Buttons generated...", delete_after=0.1)

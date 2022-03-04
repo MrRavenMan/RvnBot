@@ -67,7 +67,7 @@ class Assigner(Cog):
     @has_any_role(admin, config["Assigner"]["manage_assigner_roles"])
     async def assigner_roles(self, ctx): # Reload chats command - calls load_chats func
         await self.load_assigner_roles()
-        await ctx.interaction.response.send_message(content="Assigner roles reloaded!", delete_after=5)
+        await ctx.interaction.response.send_message(content="Assigner roles reloaded!", delete_after=3)
 
     @slash_command(name="add_role", description="Add role to user")
     @has_any_role(admin, config["Assigner"]["manage_role_cmd"])  # Add role to user using commmand
@@ -83,8 +83,7 @@ class Assigner(Cog):
         if ctx.author.guild_permissions.administrator:
             await user.remove_roles(role)
             await ctx.interaction.response.send_message(content=f"Successfully removed {role.mention} from {user.mention}.", delete_after=7)
-            print(f"Successfully removed {role.name} from {user.name}.")
-        
+            print(f"Successfully removed {role.name} from {user.name}.") 
         
     """ Methods """
     async def load_assigner_roles(self): # Load assigner roles

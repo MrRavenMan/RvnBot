@@ -1,4 +1,5 @@
 import discord
+from discord.ext.commands.errors import MissingAnyRole, CommandNotFound
 
 from helpers.config_loader import config
 from discord.ext import commands
@@ -35,7 +36,12 @@ def main():
     else:
         print("Chatter: OFF - not enabled in config")
 
-
+    @client.event
+    async def on_application_command_error(ctx, error):
+        if isinstance(error, MissingAnyRole):
+            pass # SUPRESS ALL MissingAnyRole errors caused by users not allowed to use commands using slash commands
+        if isinstance(error, CommandNotFound):
+            pass # SUPRESS ALL CommandNotFound errors caused by users using ! command not existing within RavenBot
     client.run(TOKEN)
 
 

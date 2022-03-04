@@ -14,7 +14,7 @@ class BotStatusEmbed(InfoEmbed):
         super().__init__()
         self.title = "Bot Info"
         self.description = description
-        self.set_footer(text="This message wil auto-delete after 15 seconds")
+        self.set_footer(text="This message wil auto-delete after 10 seconds")
 
 
 class JoinEmbed(InfoEmbed):
