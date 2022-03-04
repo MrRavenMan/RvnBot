@@ -28,7 +28,7 @@ class MemberWatch(Cog):
     async def on_member_join(self, member):
         print("member joined")
         embed = JoinEmbed(member)
-        await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(embed=embed)
+        await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(content=member.mention, embed=embed)
 
         try:
             with open ("config/memberWatchConfig/welcome_dm.txt", "r") as myfile:
