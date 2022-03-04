@@ -1,14 +1,7 @@
-import configparser
-
 import discord
 from discord.ui import InputText, Modal
 
 from views.rouletteButtonView import RouletteButtonView
-
-
-config = configparser.ConfigParser()
-config.read("config/config.ini")
-owner = config["General"]["manager_role"]
 
 
 class RouletteSetupModal(Modal):

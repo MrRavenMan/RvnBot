@@ -1,29 +1,23 @@
-import configparser
-import discord
-
-from discord.ext.commands import Cog, slash_command, has_role, command
+from discord.ext.commands import Cog, slash_command, has_any_role, command
 
 from helpers.status import set_status
 from helpers.command_helpers import cmd_acknowledge
-from embeds.infoEmbeds import BotStatusEmbed
+from helpers.config_loader import config, admin
 
-config = configparser.ConfigParser()
-config.read("config/config.ini")
-owner = config["General"]["manager_role"]
+from embeds.infoEmbeds import BotStatusEmbed
 
 
 class General(Cog):
-    def __init__(self, client, config):
+    def __init__(self, client):
         self.bot = client
-        self.config = config    
 
 
     @Cog.listener()
     async def on_ready(self):
         print("General Module: ONLINE")
 
-        await set_status(client=self.bot, status=self.config["status"], status_msg=self.config["status_message"], 
-                        status_streaming_url=self.config["status_streaming_url"])
+        await set_status(client=self.bot, status=config["General"]["status"], status_msg=config["General"]["status_message"], 
+                        status_streaming_url=config["General"]["status_streaming_url"])
 
         description = f"{self.bot.user} has logged in and is now online!"
         print(description)
@@ -33,12 +27,12 @@ class General(Cog):
 
     """ Utility commands """
     @slash_command(name="test", description="Test if bot is online")  # Command to test if bot is online
-    @has_role(config["General"]["manager_role"])
+    @has_any_role(admin, config["General"]["manage_test"])
     async def test(self, ctx,):
         await ctx.interaction.response.send_message(content=f"I am online!", delete_after=5)
 
     @slash_command(name="close", description='Shut down bot')  # Command to shut down the bot
-    @has_role(config["General"]["manager_role"])
+    @has_any_role(admin, config["General"]["manage_close"])
     async def close(self, ctx):
         description = f"Shutting bot down."
         print(description)
@@ -48,7 +42,7 @@ class General(Cog):
         await self.bot.close()
 
     @command(aliases=["msg"], brief='Make bot send message in chat')  # Command to shut down the bot
-    @has_role(config["General"]["manager_role"])
+    @has_any_role(admin, config["General"]["manage_msg"])
     async def message(self, ctx):
         msg = ctx.message.content.replace("!msg", "").replace("!message", "")
         if not (msg is None or msg == ""):

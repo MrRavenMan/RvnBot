@@ -1,25 +1,19 @@
-from discord import Forbidden
-from discord.ext.commands import Cog, MissingPermissions, slash_command, has_role
+from discord.errors import Forbidden
+from discord.ext.commands import Cog, slash_command, has_any_role
 from discord.channel import DMChannel
 
 import re
 import json
 import datetime
-import configparser
 
-from helpers.command_helpers import cmd_acknowledge
+from helpers.config_loader import config, admin
 from embeds.warningEmbeds import UserWarningEmbed
 from embeds.infoEmbeds import JoinEmbed, LeaveEmbed, BotStatusEmbed
 
 
-config = configparser.ConfigParser()
-config.read("config/config.ini")
-owner = config["General"]["manager_role"]
-
 class MemberWatch(Cog):
-    def __init__(self, client, config):
+    def __init__(self, client):
         self.bot = client
-        self.config = config
 
         self.blacklist_words = []
         self.blacklist_paragraphs = []
@@ -34,7 +28,7 @@ class MemberWatch(Cog):
     async def on_member_join(self, member):
         print("member joined")
         embed = JoinEmbed(member)
-        await self.bot.get_channel(int(self.config["join_msg_channel_id"])).send(embed=embed)
+        await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(embed=embed)
 
         try:
             with open ("config/memberWatchConfig/welcome_dm.txt", "r") as myfile:
@@ -47,13 +41,11 @@ class MemberWatch(Cog):
         except Forbidden:
             pass
 
-
     @Cog.listener()
     async def on_member_remove(self, member):
         print("member left")
         embed = LeaveEmbed(member)
-        await self.bot.get_channel(int(self.config["join_msg_channel_id"])).send(embed=embed)
-
+        await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(embed=embed)
 
     @Cog.listener()
     async def on_message(self, message):
@@ -80,7 +72,7 @@ class MemberWatch(Cog):
                         Reason: Wrote blacklisted word in {message.channel.name}. {messageAuthor.name} said: {message.content}"
                         await message.guild.kick(messageAuthor, reason=reason)
                         warning_embed.add_reaction("User has been kicked")
-                        await self.bot.get_channel(int(self.config["blacklist_msg_channel_id"])).send(embed=warning_embed)
+                        await self.bot.get_channel(int(config["MemberWatch"]["blacklist_msg_channel_id"])).send(embed=warning_embed)
                         warning_embed.print_warning_to_console()
                         return
                     if bannedItem.ban_on_use:
@@ -88,7 +80,7 @@ class MemberWatch(Cog):
                         Reason: Wrote blacklisted word in {message.channel.name}. {messageAuthor.name} said: {message.content}"
                         await message.guild.ban(messageAuthor, reason=reason)
                         warning_embed.add_reaction("User has been banned")
-                        await self.bot.get_channel(int(self.config["blacklist_msg_channel_id"])).send(embed=warning_embed)
+                        await self.bot.get_channel(int(config["MemberWatch"]["blacklist_msg_channel_id"])).send(embed=warning_embed)
                         warning_embed.print_warning_to_console()
                         return
                     if bannedItem.timeout():
@@ -97,15 +89,15 @@ class MemberWatch(Cog):
                         await messageAuthor.timeout_for(duration=bannedItem.timeout_period, reason=reason)
 
                         warning_embed.add_reaction(f"User has been given timeout until {(datetime.datetime.utcnow() + bannedItem.timeout_period).strftime('%Y-%m-%d %H:%M:%S')}")
-                        await self.bot.get_channel(int(self.config["blacklist_msg_channel_id"])).send(embed=warning_embed)
+                        await self.bot.get_channel(int(config["MemberWatch"]["blacklist_msg_channel_id"])).send(embed=warning_embed)
                         warning_embed.print_warning_to_console()
                         return
-                except MissingPermissions:
-                        print(f"BOT is lacking permission act against user {messageAuthor.name}#{messageAuthor.discriminator}")
-
+                except Forbidden:
+                        print(f"BOT is lacking permission act against user {messageAuthor.name}#{messageAuthor.discriminator} \
+                        They used blacklisted phrase: '{message.content}' in {message.channel.name}")
 
     @slash_command(name="blacklist", description=f'Reload blacklist')  # Command to reload blacklist
-    @has_role(config["General"]["manager_role"])
+    @has_any_role(admin, config["MemberWatch"]["manage_blacklist"])
     async def blacklist(self, ctx,):
         await self.load_blacklist()
         await ctx.interaction.response.send_message(content=f"Blacklist reloaded", delete_after=5)

@@ -1,14 +1,7 @@
-import configparser
-
 import discord
 from discord.ui import InputText, Modal
 
 from views.roleButtonView import RoleAssignmentView
-
-
-config = configparser.ConfigParser()
-config.read("config/config.ini")
-owner = config["General"]["manager_role"]
 
 
 class RoleAssignButtonModal(Modal):

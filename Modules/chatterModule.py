@@ -1,23 +1,16 @@
 import random
 import json
-import configparser
 
-from discord.ext.commands import Cog, slash_command, has_role
+from discord.ext.commands import Cog, slash_command, has_any_role
 
-from helpers.command_helpers import cmd_acknowledge
 from embeds.infoEmbeds import BotStatusEmbed
 from views.rouletteSetupModal import RouletteSetupModal
-
-
-config = configparser.ConfigParser()
-config.read("config/config.ini")
-owner = config["General"]["manager_role"]
+from helpers.config_loader import config, admin
 
 
 class Chatter(Cog):
-    def __init__(self, client, config):
+    def __init__(self, client):
         self.bot = client
-        self.config = config
 
         self.calls = []
         self.calls_map = []
@@ -28,7 +21,7 @@ class Chatter(Cog):
 
     @Cog.listener()
     async def on_ready(self):
-        await self.load_chats_(startup=True)
+        await self.load_chats(startup=True)
         await self.load_roulette(startup=True)
         print("Chatter Module: ONLINE")
 
@@ -43,7 +36,7 @@ class Chatter(Cog):
             chat_idx = self.calls_map[idx]
             
             # If always respond is disabled and user not in specified role, only respond if probability True
-            if self.config["always_respond"] == "False" and not any(role.id in self.always_respond_to_role_ids for role in messageAuthor.roles): 
+            if config["Chatter"]["always_respond"] == "False" and not any(role.id in self.always_respond_to_role_ids for role in messageAuthor.roles): 
                 i = random.uniform(0, 1) 
                 k = float(self.chats_[chat_idx]["probability"])
                 if i > k:
@@ -66,22 +59,20 @@ class Chatter(Cog):
 
 
     @slash_command(name="chats", description=f'Reload chats')
-    @has_role(owner)
+    @has_any_role(admin, config["Chatter"]["manage_chats"])
     async def chats(self, ctx): # Reload chats command - calls load_chats func
         await self.load_chats()
-        await ctx.interaction.response.send_message(content=f"Chats reloaded", delete_after=5)
+        await ctx.interaction.response.send_message(content=f"Chats reloaded!", delete_after=5)
         print("Chatter: RELOADED")
 
-
     @slash_command(name="roulette_reload", description=f'Reload roulette options')
-    @has_role(owner)
+    @has_any_role(admin, config["Chatter"]["manage_roulette_reload"])
     async def roulette_reload(self, ctx): # Reload roulette options command - calls load_roulette func
-        await self.load_chats()
-        await ctx.interaction.response.send_message(content=f"Roulette options reloaded", delete_after=5)
+        await self.load_roulette()
+        await ctx.interaction.response.send_message(content=f"Roulette options reloaded!", delete_after=5)
 
-
-    @slash_command(name="roulette", description=f'Reload chats')
-    @has_role(owner)
+    @slash_command(name="roulette", description=f'Make roulette button')
+    @has_any_role(admin, config["Chatter"]["manage_roulette"])
     async def roulette(self, ctx): # Reload chats command - calls load_chats func
         modal = RouletteSetupModal(roulette_options=self.roulette_options)
         await ctx.interaction.response.send_modal(modal=modal)
@@ -98,7 +89,7 @@ class Chatter(Cog):
             await self.bot.get_channel(int(config["General"]["bot_info_channel_id"])).send(embed=embed, delete_after=15)
 
 
-    async def load_chats_(self, startup=False): # Reload chats function
+    async def load_chats(self, startup=False): # Reload chats function
         # Clear class vars
         self.calls = []
         self.calls_map = []
