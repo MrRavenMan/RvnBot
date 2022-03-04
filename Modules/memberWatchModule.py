@@ -26,9 +26,9 @@ class MemberWatch(Cog):
 
     @Cog.listener()
     async def on_member_join(self, member):
-        print("member joined")
+        print(f"member {member.name}#{member.discriminator} joined")
         embed = JoinEmbed(member)
-        await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(content=member.mention, embed=embed)
+        await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(, embed=embed)
 
         try:
             with open ("config/memberWatchConfig/welcome_dm.txt", "r") as myfile:
@@ -43,7 +43,7 @@ class MemberWatch(Cog):
 
     @Cog.listener()
     async def on_member_remove(self, member):
-        print("member left")
+        print(f"member {member.name}#{member.discriminator} left")
         embed = LeaveEmbed(member)
         await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(embed=embed)
 
