@@ -49,8 +49,8 @@ class MemberWatch(Cog):
         # await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(embed=embed)
         await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(content=f"**{member.name}#{member.discriminator}** has left the server.")
 
-    @Cog.listener()
-    async def on_message(self, message):
+    @Cog.listener() 
+    async def on_message(self, message): # blacklist logic
         messageAuthor = message.author
     
         if messageAuthor != self.bot.user: # check if message is by bot itself or whitelisted role
@@ -65,23 +65,20 @@ class MemberWatch(Cog):
                 warning_embed = UserWarningEmbed(user=messageAuthor, offense="Use of blacklisted item", description=f"They said: '{message.content}'",
                                         channel=message.channel)
 
-
-                if bannedItem.warn_on_use:
-                    print("NOT IMPLEMENTED: SEND WARNING TO USER")
                 try:
-                    if bannedItem.kick_on_use:
-                        reason = f"{messageAuthor.name}#{messageAuthor.discriminator} has been kicked. \
-                        Reason: Wrote blacklisted word in {message.channel.name}. {messageAuthor.name} said: {message.content}"
-                        await message.guild.kick(messageAuthor, reason=reason)
-                        warning_embed.add_reaction("User has been kicked")
-                        await self.bot.get_channel(int(config["MemberWatch"]["blacklist_msg_channel_id"])).send(embed=warning_embed)
-                        warning_embed.print_warning_to_console()
-                        return
                     if bannedItem.ban_on_use:
                         reason = f"{messageAuthor.name}#{messageAuthor.discriminator} has been banned. \
                         Reason: Wrote blacklisted word in {message.channel.name}. {messageAuthor.name} said: {message.content}"
                         await message.guild.ban(messageAuthor, reason=reason)
                         warning_embed.add_reaction("User has been banned")
+                        await self.bot.get_channel(int(config["MemberWatch"]["blacklist_msg_channel_id"])).send(embed=warning_embed)
+                        warning_embed.print_warning_to_console()
+                        return
+                    if bannedItem.kick_on_use:
+                        reason = f"{messageAuthor.name}#{messageAuthor.discriminator} has been kicked. \
+                        Reason: Wrote blacklisted word in {message.channel.name}. {messageAuthor.name} said: {message.content}"
+                        await message.guild.kick(messageAuthor, reason=reason)
+                        warning_embed.add_reaction("User has been kicked")
                         await self.bot.get_channel(int(config["MemberWatch"]["blacklist_msg_channel_id"])).send(embed=warning_embed)
                         warning_embed.print_warning_to_console()
                         return
@@ -91,6 +88,12 @@ class MemberWatch(Cog):
                         await messageAuthor.timeout_for(duration=bannedItem.timeout_period, reason=reason)
 
                         warning_embed.add_reaction(f"User has been given timeout until {(datetime.datetime.utcnow() + bannedItem.timeout_period).strftime('%Y-%m-%d %H:%M:%S')}")
+                        await self.bot.get_channel(int(config["MemberWatch"]["blacklist_msg_channel_id"])).send(embed=warning_embed)
+                        warning_embed.print_warning_to_console()
+                        return
+                    if bannedItem.warn_on_use:
+                        await messageAuthor.send(f"{messageAuthor.name}#{messageAuthor.discriminator} this is a warning for using a banned word. \n Reason: You wrote blacklisted word in {message.channel.name}. You said: {message.content} \n Note that this sentence contains one or more banned words and therefore have been deleted")
+                        warning_embed.add_reaction(f"User has been warned.")
                         await self.bot.get_channel(int(config["MemberWatch"]["blacklist_msg_channel_id"])).send(embed=warning_embed)
                         warning_embed.print_warning_to_console()
                         return

@@ -7,6 +7,7 @@ from helpers.config_loader import config, admin
 from views.roleButtonView import RoleAssignmentView
 from views.roleButtonSetupModal import RoleAssignButtonModal
 from views.roleAssignerDropdownView import RoleAssignerView
+from embeds.infoEmbeds import RoleEmbed
 
 
 class Assigner(Cog):
@@ -33,8 +34,8 @@ class Assigner(Cog):
                 for role_id in assigner_role["role_ids"]:
                     roles.append(ctx.guild.get_role(int(role_id)))
         if roles is not None:
-            view = RoleAssignerView(roles, user)
-            await ctx.interaction.response.send_message(content=f"Pick role for {user.mention}:", view=view, delete_after=10)
+            view = RoleAssignerView(roles, user, author=ctx.user)
+            await ctx.interaction.response.send_message(content=f"Pick role for {user.mention}:", view=view, delete_after=7)
         else:
             await ctx.interaction.response.send_message(content=f"You are not allowed to use this command!", delete_after=5)
 
@@ -50,8 +51,8 @@ class Assigner(Cog):
                         roles.append(role)
 
         if roles is not None:
-            view = RoleAssignerView(roles, user, unassign=True)
-            await ctx.interaction.response.send_message(content="Pick role to remove from user:", view=view, delete_after=10)
+            view = RoleAssignerView(roles, user, author=ctx.user, unassign=True)
+            await ctx.interaction.response.send_message(content="Pick role to remove from user:", view=view, delete_after=7)
         else:
             await ctx.interaction.response.send_message(content=f"You are not allowed to use this command!", delete_after=5)
 
@@ -63,7 +64,7 @@ class Assigner(Cog):
 
 
     """ Utility commands """
-    slash_command(name="assigner_roles", description=f'Reload assignable roles')
+    @slash_command(name="assigner_roles", description=f'Reload assignable roles')
     @has_any_role(admin, config["Assigner"]["manage_assigner_roles"])
     async def assigner_roles(self, ctx): # Reload chats command - calls load_chats func
         await self.load_assigner_roles()
@@ -72,18 +73,16 @@ class Assigner(Cog):
     @slash_command(name="add_role", description="Add role to user")
     @has_any_role(admin, config["Assigner"]["manage_role_cmd"])  # Add role to user using commmand
     async def add_role(self, ctx, role: Option(Role, description="Role to assign", required=True), user: Option(Member, description="Member to assign role to", required=True)):
-        if ctx.author.guild_permissions.administrator:
-            await user.add_roles(role)
-            await ctx.interaction.response.send_message(content=f"Successfully given {role.mention} to {user.mention}.", delete_after=7)
-            print(f"Successfully given {role.name} to {user.name}.")
+        await user.add_roles(role)
+        embed = RoleEmbed(user, role)
+        await ctx.interaction.response.send_message(embed=embed, delete_after=10)
 
     @slash_command(name="remove_role", description="Remove role from user")
     @has_any_role(admin, config["Assigner"]["manage_role_cmd"])  # Remove role from user using commmand
     async def remove_role(self, ctx, role: Option(Role, description="Role to assign", required=True), user: Option(Member, description="Member to assign role to", required=True)):
-        if ctx.author.guild_permissions.administrator:
-            await user.remove_roles(role)
-            await ctx.interaction.response.send_message(content=f"Successfully removed {role.mention} from {user.mention}.", delete_after=7)
-            print(f"Successfully removed {role.name} from {user.name}.") 
+        await user.remove_roles(role)
+        embed = RoleEmbed(user, role, unassigned=True)
+        await ctx.interaction.response.send_message(embed=embed, delete_after=10)
         
     """ Methods """
     async def load_assigner_roles(self): # Load assigner roles
