@@ -93,7 +93,7 @@ IMPORTANT: Only 1 punishment may be enabled!
 
 `"ban_on_use"` must be a bool, set to true, to enable ban as punishment
 
-`"warn_on_use"` must be a bool, set to true, to enable written warning as punishment (NOT IMPLEMENTED)
+`"warn_on_use"` must be a bool, set to true, to enable written warning as punishment. Will send a warning msg (DM) to user
 
 Note: Regardsless of what punishment is enabled, RavenBot will remove the message containing the blacklsited word immediatly.
 
