@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 class RouletteButtonView(View):  # Non-Persistent view for the roulette button
         def __init__(self, roulette_options, roulette_btn_label = "Play roulette!"):
             super().__init__()
+            self.timeout = None
             
             roulette_btn = self.RouletteButton(roulette_options, roulette_btn_label)
             self.add_item(roulette_btn)
