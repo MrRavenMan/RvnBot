@@ -14,16 +14,6 @@ class VoiceActivities(Cog):
     async def on_ready(self):
         print("Voice Activity Module: ONLINE")   
 
-    """ Utility commands """
-    @slash_command(name="test", description="Test if bot is online")  # Command to test if bot is online
-    @has_any_role(admin, config["General"]["manage_test"])
-    async def test(self, ctx,):
-        await ctx.interaction.response.send_message(content=f"I am online!", delete_after=3)
-
-    @slash_command(name='greet', description='Greet someone!')
-    async def greet(ctx, name: Option(str, "Enter your friend's name", required = False, default = 'John')):
-        await ctx.respond(f'Hello {name}!')
-
     if config.getboolean("VoiceActivities", "allow_youtube"):
         @has_any_role(admin, config["VoiceActivities"]["manage_voice_activities"])
         @slash_command(name="activity_youtube", description="Start watch together activity in a voice channel")    
