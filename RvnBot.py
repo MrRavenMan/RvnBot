@@ -36,6 +36,12 @@ def main():
     else:
         print("Chatter: OFF - not enabled in config")
 
+    if config.getboolean("General", "enable_VoiceActivities"):
+        from modules.activityModule import VoiceActivities
+        client.add_cog(VoiceActivities(client))
+    else:
+        print("Chatter: OFF - not enabled in config")
+
     @client.event
     async def on_application_command_error(ctx, error):
         if isinstance(error, MissingAnyRole):
