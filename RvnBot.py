@@ -40,7 +40,8 @@ def main():
         from modules.activityModule import VoiceActivities
         client.add_cog(VoiceActivities(client))
     else:
-        print("Chatter: OFF - not enabled in config")
+        print("Voice Activity: OFF - not enabled in config")
+        
 
     @client.event
     async def on_application_command_error(ctx, error):
