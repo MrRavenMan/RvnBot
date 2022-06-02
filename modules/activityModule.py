@@ -12,7 +12,7 @@ class VoiceActivities(Cog):
 
     @Cog.listener()
     async def on_ready(self):
-        print("Activity Module: ONLINE")   
+        print("Voice Activity Module: ONLINE")   
 
     """ Utility commands """
     @slash_command(name="test", description="Test if bot is online")  # Command to test if bot is online
