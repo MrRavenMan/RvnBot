@@ -4,8 +4,6 @@ from discord.ext.commands.errors import MissingAnyRole, CommandNotFound
 from helpers.config_loader import config
 from discord.ext import commands
 
-from discord_together import DiscordTogether
-
 
 def main():
     intents = discord.Intents.default()
@@ -45,17 +43,6 @@ def main():
         if isinstance(error, CommandNotFound):
             pass # SUPRESS ALL CommandNotFound errors caused by users using ! command not existing within RavenBot
     client.run(TOKEN)
-
-    @client.event
-    async def on_ready():
-        client.togetherControl = await DiscordTogether("BOT_TOKEN_HERE")
-        print('Bot is online!')
-
-    @client.command()
-    async def start(ctx):
-        link = await client.togetherControl.create_link(ctx.author.voice.channel.id, 'youtube')
-        await ctx.send(f"Click the blue link!\n{link}")
-
 
 
 """ RUN """

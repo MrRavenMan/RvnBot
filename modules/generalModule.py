@@ -6,8 +6,6 @@ from helpers.config_loader import config, admin
 
 from embeds.infoEmbeds import BotStatusEmbed
 
-from discord_together import DiscordTogether
-
 
 class General(Cog):
     def __init__(self, client):
@@ -25,15 +23,7 @@ class General(Cog):
         print(description)
         embed = BotStatusEmbed(description=description)
         await self.bot.get_channel(int(config["General"]["bot_info_channel_id"])).send(embed=embed, delete_after=15)
-
-        self.bot.togetherControl = await DiscordTogether("BOT_TOKEN_HERE")
-        print('Bot is online!')
     
-    @command()
-    async def start(self, ctx):
-        print("Something worked")
-        link = await self.bot.togetherControl.create_link(ctx.author.voice.channel.id, 'youtube')
-        await ctx.send(f"Click the blue link!\n{link}")
 
     """ Utility commands """
     @slash_command(name="test", description="Test if bot is online")  # Command to test if bot is online
