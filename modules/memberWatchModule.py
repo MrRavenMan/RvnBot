@@ -55,7 +55,7 @@ class MemberWatch(Cog):
     
         if messageAuthor != self.bot.user: # check if message is by bot itself or whitelisted role
             if (isinstance(message.channel, DMChannel) == False):
-                bannedItem = self.contains_blacklisted(message.content, messageAuthor)
+                bannedItem = self.contains_blacklisted(message.content.to_lower(), messageAuthor)
                 if bannedItem is None: # Exit func if not banned item in msg
                     return
 
@@ -121,7 +121,7 @@ class MemberWatch(Cog):
                 if int(sub_blacklist["timeout_minutes"]) != 0:
                     timeout_period = datetime.timedelta(minutes=int(sub_blacklist["timeout_minutes"]))
 
-                blacklisted_item = BlacklistedItem(word=item,
+                blacklisted_item = BlacklistedItem(word=item.to_lower(),
                                         timeout_period=timeout_period,
                                         kick_on_use=bool(sub_blacklist["kick_on_use"]),
                                         ban_on_use=bool(sub_blacklist["ban_on_use"]),
