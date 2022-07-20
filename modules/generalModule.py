@@ -1,5 +1,5 @@
 from discord.ext.commands import Cog, slash_command, has_any_role, command
-from discord import Option, Message, Reaction
+from discord import Option, TextChannel
 import random
 
 from helpers.status import set_status
@@ -32,9 +32,12 @@ class General(Cog):
     @slash_command(name="pick", description="Pick random people who reacted to message") # Command to pick users reacting to msg
     async def pick(self, ctx, msg_id: Option(str, description="Message id of message to pick reacting people from", required=True),
                             winners: Option(int, description="Amount of people to pick", required=True),
-                            reaction: Option(str, description="Reaction to pick users from (Only default emojis!). Leave empty to allow all reactions", required=False)):
-
-        msg = await ctx.fetch_message(int(msg_id))
+                            reaction: Option(str, description="Reaction to pick users from (Only default emojis!). Leave empty to allow all reactions", required=False),
+                            channel: Option(TextChannel, description="Channel message with id is written in. Leave empty if same channel as command", required=False)):
+        if channel is None:
+            msg = await ctx.fetch_message(int(msg_id))
+        else:
+            msg = await channel.fetch_message(int(msg_id))
         reacters = [] # List of users reacting to msg
         for msg_reaction in msg.reactions:
             if msg_reaction.me is False:
