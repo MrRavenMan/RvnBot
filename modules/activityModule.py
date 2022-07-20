@@ -21,6 +21,7 @@ class VoiceActivities(Cog):
                                                                     description="Voice channel to play in",
                                                                     required=True)):
             await start_activity(activity_key="youtube", voice_channel=voice_channel, interaction=ctx)
+            await ctx.interaction.response.send_message("Generated activity: ")
     
     if config.getboolean("VoiceActivities", "allow_poker"):
         @has_any_role(admin, config["VoiceActivities"]["manage_voice_activities"])
@@ -29,6 +30,7 @@ class VoiceActivities(Cog):
                                                                     description="Voice channel to play in",
                                                                     required=True)):
             await start_activity(activity_key="poker", voice_channel=voice_channel, interaction=ctx)
+            await ctx.interaction.response.send_message("Generated activity: ")
     
     if config.getboolean("VoiceActivities", "allow_chess"):
         @has_any_role(admin, config["VoiceActivities"]["manage_voice_activities"])
@@ -37,6 +39,7 @@ class VoiceActivities(Cog):
                                                                     description="Voice channel to play in",
                                                                     required=True)):
             await start_activity(activity_key="chess", voice_channel=voice_channel, interaction=ctx)
+            await ctx.interaction.response.send_message("Generated activity: ")
 
     if config.getboolean("VoiceActivities", "allow_checkers"):
         @has_any_role(admin, config["VoiceActivities"]["manage_voice_activities"])
@@ -45,6 +48,7 @@ class VoiceActivities(Cog):
                                                                     description="Voice channel to play in",
                                                                     required=True)):
             await start_activity(activity_key="checkers", voice_channel=voice_channel, interaction=ctx)
+            await ctx.interaction.response.send_message("Generated activity: ")
 
     if config.getboolean("VoiceActivities", "allow_betrayal"):
         @has_any_role(admin, config["VoiceActivities"]["manage_voice_activities"])
@@ -53,6 +57,7 @@ class VoiceActivities(Cog):
                                                                     description="Voice channel to play in",
                                                                     required=True)):
             await start_activity(activity_key="betrayal", voice_channel=voice_channel, interaction=ctx)
+            await ctx.interaction.response.send_message("Generated activity: ")
 
     if config.getboolean("VoiceActivities", "allow_fishington"):
         @has_any_role(admin, config["VoiceActivities"]["manage_voice_activities"])
@@ -61,6 +66,7 @@ class VoiceActivities(Cog):
                                                                     description="Voice channel to play in",
                                                                     required=True)):
             await start_activity(activity_key="fishington", voice_channel=voice_channel, interaction=ctx)
+            await ctx.interaction.response.send_message("Generated activity: ")
 
     if config.getboolean("VoiceActivities", "allow_letterleague"):
         @has_any_role(admin, config["VoiceActivities"]["manage_voice_activities"])
@@ -69,6 +75,7 @@ class VoiceActivities(Cog):
                                                                     description="Voice channel to play in",
                                                                     required=True)):
             await start_activity(activity_key="letterleague", voice_channel=voice_channel, interaction=ctx)
+            await ctx.interaction.response.send_message("Generated activity: ")
 
     if config.getboolean("VoiceActivities", "allow_wordsnacks"):
         @has_any_role(admin, config["VoiceActivities"]["manage_voice_activities"])
@@ -77,6 +84,7 @@ class VoiceActivities(Cog):
                                                                     description="Voice channel to play in",
                                                                     required=True)):
             await start_activity(activity_key="wordsnacks", voice_channel=voice_channel, interaction=ctx)
+            await ctx.interaction.response.send_message("Generated activity: ")
     
     if config.getboolean("VoiceActivities", "allow_sketchheads"):
         @has_any_role(admin, config["VoiceActivities"]["manage_voice_activities"])
@@ -85,3 +93,4 @@ class VoiceActivities(Cog):
                                                                     description="Voice channel to play in",
                                                                     required=True)):
             await start_activity(activity_key="sketchheads", voice_channel=voice_channel, interaction=ctx)
+            await ctx.interaction.response.send_message("Generated activity: ")

@@ -1,4 +1,6 @@
 from discord.ext.commands import Cog, slash_command, has_any_role, command
+from discord import Option, Message, Reaction
+import random
 
 from helpers.status import set_status
 from helpers.command_helpers import cmd_acknowledge
@@ -24,6 +26,42 @@ class General(Cog):
         embed = BotStatusEmbed(description=description)
         await self.bot.get_channel(int(config["General"]["bot_info_channel_id"])).send(embed=embed, delete_after=15)
     
+
+    """ Picker commands"""
+    @has_any_role(admin, config["Picker"]["manage_role"])
+    @slash_command(name="pick", description="Pick random people who reacted to message") # Command to pick users reacting to msg
+    async def pick(self, ctx, msg_id: Option(str, description="Message id of message to pick reacting people from", required=True),
+                            winners: Option(int, description="Amount of people to pick", required=True),
+                            reaction: Option(str, description="Reaction to pick users from (Only default emojis!). Leave empty to allow all reactions", required=False)):
+
+        msg = await ctx.fetch_message(int(msg_id))
+        reacters = [] # List of users reacting to msg
+        for msg_reaction in msg.reactions:
+            if msg_reaction.me is False:
+                if reaction is None or msg_reaction.emoji == reaction:
+                    async for user in msg_reaction.users():
+                        reacters.append(user)
+
+
+        users = [] # List of users checked for duplicates
+        for reaction_user in reacters: # Check for duplicate users (users with multiple reactions)
+            duplicate = False
+            for user in users:
+                if user.id == reaction_user.id:
+                    duplicate = True
+                    continue
+            if duplicate is False:
+                users.append(reaction_user)
+
+        if winners > len(users): # If more winners than participants, amount of 
+            winners = len(users)     # winners will be set to amount of participants
+        winners_list = random.sample(range(0, len(users)), winners)
+        response = "Picked:"
+        for winner in winners_list:
+            response = response + f"\n {users[winner]}"
+
+        await ctx.interaction.response.send_message(response)
+
 
     """ Utility commands """
     @slash_command(name="test", description="Test if bot is online")  # Command to test if bot is online
