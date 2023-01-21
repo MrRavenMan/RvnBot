@@ -65,22 +65,28 @@ blacklist.json must be a list of objects following the format of the example bel
         "kick_on_use": false,
         "ban_on_use": true,
         "warn_on_use": false,
+        "allow_user_options": true,
         "full_word": true,
         "whitelisted_role_ids": [854340374138716180, 853692936465940501],
         "blacklisted_items": [
             "exampleWord1",
-        ]
+            "noNoWord2",
+            "NotAllowedWORD3",
+        ],
+        "user_msg_path": ""
     },
     {
         "timeout_minutes": 5,
         "kick_on_use": false,
         "ban_on_use": false,
         "warn_on_use": false,
+        "allow_user_options": true,
         "full_word": true,
         "whitelisted_role_ids": [854340374138716180, 853692936465940501],
         "blacklisted_items": [
-            "fuck you"
-        ]
+            "f##k you"
+        ],
+        "user_msg_path": "example_warning.txt"
     }
 ]
 ```
@@ -93,15 +99,21 @@ IMPORTANT: Only 1 punishment may be enabled!
 
 `"ban_on_use"` must be a bool, set to true, to enable ban as punishment
 
-`"warn_on_use"` must be a bool, set to true, to enable written warning as punishment. Will send a warning msg (DM) to user
+`"warn_on_use"` must be a bool, set to true, to enable written warning as punishment. Will send a warning msg (DM) to user. If `"user_msg_path": ""` is set to `""` (none) a standard warning will be sent.
+
+`"allow_user_options"` must be a bool. Set to `true` to enable moderators to click a button to kick or barn user. 
+Note: `"kick_on_use", "ban_on_use"` must be set to `false` for this to be enabled!
 
 Note: Regardsless of what punishment is enabled, RavenBot will remove the message containing the blacklsited word immediatly.
 
 `"full_word"`: If true, blacklisted items must be written as independent words in a discord message. That means a blacklisted item called "test", will not act against a message where the word "tests" is written.
 
-`whitelisted_role_ids`: List of ints, which are role ids of roles who may write blacklsited items without any consequences.
+`"whitelisted_role_ids"`: List of ints, which are role ids of roles who may write blacklsited items without any consequences.
 
-`blacklisted_items`: List of items blacklisted. (Note: capital letters do not matter)
+`"blacklisted_items"`: List of items blacklisted. (Note: capital letters do not matter)
+
+`"user_msg_path"`: if set to `""` this feature will be disabled. If you want a custom message to be sent to offending users, enter the file name like `example_warning.txt` of a txt file created 
+in config/memberWatchConfig/userWarnings containing a warning message that will be sent to users. See config/memberWatchConfig/userWarnings/example_warning.txt for example.
 
 
 `/blacklist` Command to reload blacklist (Use when changes have been made to blacklist.json)

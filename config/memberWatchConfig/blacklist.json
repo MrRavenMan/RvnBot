@@ -4,44 +4,53 @@
         "kick_on_use": false,
         "ban_on_use": false,
         "warn_on_use": true,
+        "allow_user_options": true,
         "full_word": true,
         "whitelisted_role_ids": [854340374138716180, 853692936465940501],
         "blacklisted_items": [
-            "sayThisWordToBeWarned!"
-        ]
+            "sayThisWordToBeWarned!",
+            "XXXX"
+        ],
+        "user_msg_path": "example_warning.txt"
     },
     {
         "timeout_minutes": 0,
         "kick_on_use": false,
         "ban_on_use": true,
         "warn_on_use": false,
+        "allow_user_options": true,
         "full_word": true,
         "whitelisted_role_ids": [854340374138716180, 853692936465940501],
         "blacklisted_items": [
             "sayThisWordToBeBanned",
             "orThisWordToBeBanned"
-        ]
+        ],
+        "user_msg_path": ""
     },
     {
         "timeout_minutes": 0,
         "kick_on_use": true,
         "ban_on_use": false,
         "warn_on_use": false,
+        "allow_user_options": true,
         "full_word": false,
         "whitelisted_role_ids": [854340374138716180, 853692936465940501],
         "blacklisted_items": [
             "ifThisWordIsInASentenceYouGetKicked"
-        ]
+        ],
+        "user_msg_path": ""
     },
     {
         "timeout_minutes": 15,
         "kick_on_use": false,
         "ban_on_use": false,
         "warn_on_use": false,
+        "allow_user_options": false,
         "full_word": true,
         "whitelisted_role_ids": [854340374138716180, 853692936465940501],
         "blacklisted_items": [
             "sayThisWordToGetTimeoutFor15Minutes"
-        ]
+        ],
+        "user_msg_path": ""
     }
 ]
