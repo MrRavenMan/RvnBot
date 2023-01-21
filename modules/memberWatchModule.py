@@ -210,7 +210,8 @@ class MemberWatch(Cog):
     @slash_command(name="report", description=f'Generate Statistics')  # Command to generate statistics
     @has_any_role(admin, config["MemberWatch"]["query_reports"])
     async def data_report(self, ctx,):
-        self.report_data()
+        await self.report_data()
+        await ctx.interaction.response.send_message("Server report:", delete_after=0.1)
 
     @slash_command(name="user_report", description=f'See report for user')  # Command to reset member data
     @has_any_role(admin, config["MemberWatch"]["query_reports"])
@@ -221,21 +222,20 @@ class MemberWatch(Cog):
     @slash_command(name="data_export", description=f'Export member data to JSON file')  # Command to export member data to JSON file
     @has_any_role(admin, config["MemberWatch"]["manage_reports"])
     async def data_export(self, ctx,):
-        with open(f"Member DATA {datetime.datetime.utcnow()}.json", "w") as write_file:
-            json.dump(self.data, write_file, indent=4)
-        await ctx.interaction.response.send_message(content=f"Data exported to JSON file", delete_after=3)
+        # self.export_data()
+        await ctx.interaction.response.send_message(content=f"Method currently not implemented", delete_after=3)
 
     @slash_command(name="data_reset", description=f'Reset Member data')  # Command to reset member data
     @has_any_role(admin, config["MemberWatch"]["manage_reports"])
     async def data_reset(self, ctx,):
-        with open(f"Member DATA {datetime.datetime.utcnow()}.json", "w") as write_file:
-            json.dump(self.data, write_file, indent=4)
-
         self.data = {"joins": [], "leaves": [], "warnings": [], "warned_users": {}, "kicks": [], "kicked_users": {}, "bans": [], "timeouts": [], "timeouted_users": {},
                         "blacklist_removals": [], "blacklisted_words": {}, "blacklist_users": {}, "warning_dms": [], "data_start": time.time()}
         self.save_data()
         await ctx.interaction.response.send_message(content=f"Data reset", delete_after=3)
 
+    def export_data(self):
+        with open(f"Member DATA {datetime.datetime.utcnow()}.json", "w") as write_file:
+            json.dump(self.data, write_file, indent=4)
 
     async def load_blacklist(self, startup=False): # Set startup to True if called by on_ready
         with open('config/memberWatchConfig/blacklist.json') as blacklist_file:
