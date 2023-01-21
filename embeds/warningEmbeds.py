@@ -28,6 +28,9 @@ class UserWarningEmbed(WarningEmbed):
         self.reaction = reaction
         self.add_field(name="Reaction:", value=reaction, inline=False)
 
+    def add_repeat_offender(self, punishment, offense_cnt):
+        self.add_field(name="Repeat Offender:", value=f"This user has been {punishment} {offense_cnt} times before", inline=False)
+
 
     def print_warning_to_console(self):
         print("------------------- USER WARNING --------------------------")

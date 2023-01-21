@@ -11,6 +11,7 @@
             "sayThisWordToBeWarned!",
             "XXXX"
         ],
+        "blacklist_msg_channel_id": 950372543079018547,
         "user_msg_path": "example_warning.txt"
     },
     {
@@ -25,6 +26,7 @@
             "sayThisWordToBeBanned",
             "orThisWordToBeBanned"
         ],
+        "blacklist_msg_channel_id": 950372543079018547,
         "user_msg_path": ""
     },
     {
@@ -38,6 +40,7 @@
         "blacklisted_items": [
             "ifThisWordIsInASentenceYouGetKicked"
         ],
+        "blacklist_msg_channel_id": 950372543079018547,
         "user_msg_path": ""
     },
     {
@@ -51,6 +54,7 @@
         "blacklisted_items": [
             "sayThisWordToGetTimeoutFor15Minutes"
         ],
+        "blacklist_msg_channel_id": 950372543079018547,
         "user_msg_path": ""
     }
 ]
