@@ -45,6 +45,8 @@ class MemberWatch(Cog):
 
     @Cog.listener()
     async def on_member_join(self, member):
+        self.data["joins"].append(time.time())
+
         for user in self.recent_kick_or_banned_users:
             if user == member.id:
                 await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(content=f"{member.mention} has joined the server. This user was recently kicked from the server!")
@@ -53,8 +55,6 @@ class MemberWatch(Cog):
         else:
             await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(content=f"{member.mention} has joined the server.")
             print(f"member {member.name}#{member.discriminator} joined")
-    
-        self.data["joins"].append(time.time())
 
         try:
             with open ("config/memberWatchConfig/welcome_dm.txt", "r") as myfile:
@@ -189,9 +189,9 @@ class MemberWatch(Cog):
 
                     if bannedItem.allow_user_options and bannedItem.ban_on_use is False and bannedItem.kick_on_use is False:
                         self.recent_kick_or_banned_users.append(messageAuthor.id)
-                        view = PunishButtonsView(bot=self.bot, offender=messageAuthor, message=message, blacklist_msg_channel_id=config["MemberWatch"]["blacklist_msg_channel_id"], warning_embed=warning_embed)
+                        view = PunishButtonsView(bot=self.bot, offender=messageAuthor, message=message, blacklist_msg_channel_id=bannedItem.blacklist_msg_channel_id, warning_embed=warning_embed)
                         await self.bot.get_channel(bannedItem.blacklist_msg_channel_id).send(content=f"", embed=warning_embed, view=view)
-                        self.bot.add_view(PunishButtonsView(bot=self.bot, offender=messageAuthor, message=message, blacklist_msg_channel_id=config["MemberWatch"]["blacklist_msg_channel_id"], warning_embed=warning_embed))
+                        self.bot.add_view(PunishButtonsView(bot=self.bot, offender=messageAuthor, message=message, blacklist_msg_channel_id=bannedItem.blacklist_msg_channel_id, warning_embed=warning_embed))
                     elif bannedItem.alow_user_options is None and (bannedItem.ban_on_use or bannedItem.kick_on_use or bannedItem.warn_on_use or bannedItem.timeout):
                         await self.bot.get_channel(bannedItem.blacklist_msg_channel_id).send(embed=warning_embed)
                         warning_embed.print_warning_to_console()
@@ -213,6 +213,12 @@ class MemberWatch(Cog):
     @has_any_role(admin, config["MemberWatch"]["query_reports"])
     async def data_report(self, ctx,):
         await self.report_data()
+        await ctx.interaction.response.send_message("Server report:", delete_after=0.1)
+
+    @slash_command(name="report_short", description=f'Generate Quick Statistics')  # Command to generate statistics
+    @has_any_role(admin, config["MemberWatch"]["query_reports"])
+    async def data_report_short(self, ctx,):
+        await self.report_data(short=True)
         await ctx.interaction.response.send_message("Server report:", delete_after=0.1)
 
     @slash_command(name="user_report", description=f'See report for user')  # Command to reset member data
@@ -324,17 +330,17 @@ class MemberWatch(Cog):
     {"joins": [], "leaves": [], "warnings": [], "warned_users": {}, "kicks": [], "kicked_users": {}, "bans": [], "timeouts": [], "timeouted_users": {},
                         "blacklist_removals": [], "blacklisted_words": {}, "blacklist_users": {}, "warning_dms": [], "data_start": time.time()}
 
-    async def report_data(self):
+    async def report_data(self, short=False):
         report_embed = ReportEmbed(data=self.data)
         await self.bot.get_channel(int(config["MemberWatch"]["blacklist_msg_channel_id"])).send(content=f"", embed=report_embed)
-
-        await self.generate_data_plots(self.data["joins"], "Members joined", self.bot.get_channel(int(config["MemberWatch"]["report_msg_channel_id"])))
-        await self.generate_data_plots(self.data["leaves"], "Members left", self.bot.get_channel(int(config["MemberWatch"]["report_msg_channel_id"])))
-        await self.generate_data_plots(self.data["blacklist_removals"], "Blacklist Removals", self.bot.get_channel(int(config["MemberWatch"]["report_msg_channel_id"])))
-        await self.generate_data_plots(self.data["warnings"], "Warnings", self.bot.get_channel(int(config["MemberWatch"]["report_msg_channel_id"])))
-        await self.generate_data_plots(self.data["timeouts"], "Timeouts", self.bot.get_channel(int(config["MemberWatch"]["report_msg_channel_id"])))
-        await self.generate_data_plots(self.data["kicks"], "Kicks", self.bot.get_channel(int(config["MemberWatch"]["report_msg_channel_id"])))
-        await self.generate_data_plots(self.data["bans"], "Bans", self.bot.get_channel(int(config["MemberWatch"]["report_msg_channel_id"])))
+        if not short:
+            await self.generate_data_plots(self.data["joins"], "Members joined", self.bot.get_channel(int(config["MemberWatch"]["report_msg_channel_id"])))
+            await self.generate_data_plots(self.data["leaves"], "Members left", self.bot.get_channel(int(config["MemberWatch"]["report_msg_channel_id"])))
+            await self.generate_data_plots(self.data["blacklist_removals"], "Blacklist Removals", self.bot.get_channel(int(config["MemberWatch"]["report_msg_channel_id"])))
+            await self.generate_data_plots(self.data["warnings"], "Warnings", self.bot.get_channel(int(config["MemberWatch"]["report_msg_channel_id"])))
+            await self.generate_data_plots(self.data["timeouts"], "Timeouts", self.bot.get_channel(int(config["MemberWatch"]["report_msg_channel_id"])))
+            await self.generate_data_plots(self.data["kicks"], "Kicks", self.bot.get_channel(int(config["MemberWatch"]["report_msg_channel_id"])))
+            await self.generate_data_plots(self.data["bans"], "Bans", self.bot.get_channel(int(config["MemberWatch"]["report_msg_channel_id"])))
         
     async def generate_data_plots(self, data, action_name, channel):
         plt.style.use('seaborn')
