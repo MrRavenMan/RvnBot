@@ -130,14 +130,6 @@ class MemberWatch(Cog):
                                         channel=message.channel)
 
                 try:
-                    if bannedItem.user_msg_path is not None: # Send msg to user
-                        await messageAuthor.send((self.user_warnings[bannedItem.user_msg_path].format(user_mention=f"{messageAuthor.name}#{messageAuthor.discriminator}",
-                                                                                    channel_mention=message.channel.name,
-                                                                                    message=message.content,
-                                                                                    server_mention=message.guild.name)))
-                        self.data["warning_dms"].append(time.time())
-
-
                     if bannedItem.ban_on_use:
                         self.recent_kick_or_banned_users.append(messageAuthor.id)
 
@@ -178,10 +170,16 @@ class MemberWatch(Cog):
 
                     if bannedItem.warn_on_use:
                         if bannedItem.user_msg_path is None: # Send standard warning if no custom warning is defined
+                            print("GET TRIGGERED YOU CK")
                             await messageAuthor.send(f"{messageAuthor.name}#{messageAuthor.discriminator} this is a warning for using a banned word. \n Reason: You wrote blacklisted word in {message.channel.name}. You said: {message.content} \n Note that this sentence contains one or more banned words and therefore have been deleted")
+                        else: # Send msg to user using custom msg
+                            await messageAuthor.send((self.user_warnings[bannedItem.user_msg_path].format(user_mention=f"{messageAuthor.name}#{messageAuthor.discriminator}",
+                                                                                                        channel_mention=message.channel.name,
+                                                                                                        message=message.content,
+                                                                                                        server_mention=message.guild.name)))
+                        self.data["warning_dms"].append(time.time())
                         warning_embed.add_reaction(f"User has been warned.")
 
-                        self.data["warnings"].append(time.time())
                         if f"{messageAuthor.name}#{messageAuthor.discriminator}" in self.data["warned_users"]:
                             self.data["warned_users"][f"{messageAuthor.name}#{messageAuthor.discriminator}"] += 1
                             warning_embed.add_repeat_offender("warned", self.data["warned_users"][f"{messageAuthor.name}#{messageAuthor.discriminator}"])
@@ -192,12 +190,13 @@ class MemberWatch(Cog):
 
                     if bannedItem.allow_user_options and bannedItem.ban_on_use is False and bannedItem.kick_on_use is False:
                         self.recent_kick_or_banned_users.append(messageAuthor.id)
-                        view = PunishButtonsView(bot=self.bot, offender=messageAuthor, message=message, blacklist_msg_channel_id=bannedItem.blacklist_msg_channel_id, warning_embed=warning_embed)
+                        view = PunishButtonsView(bot=self.bot, offender=messageAuthor, message=message, blacklist_msg_channel_id=bannedItem.blacklist_msg_channel_id, warning_embed=warning_embed, msg=self.user_warnings[bannedItem.user_msg_path])
                         await self.bot.get_channel(bannedItem.blacklist_msg_channel_id).send(content=f"", embed=warning_embed, view=view)
-                        self.bot.add_view(PunishButtonsView(bot=self.bot, offender=messageAuthor, message=message, blacklist_msg_channel_id=bannedItem.blacklist_msg_channel_id, warning_embed=warning_embed))
+                        self.bot.add_view(PunishButtonsView(bot=self.bot, offender=messageAuthor, message=message, blacklist_msg_channel_id=bannedItem.blacklist_msg_channel_id, warning_embed=warning_embed, msg=self.user_warnings[bannedItem.user_msg_path]))
                     elif bannedItem.alow_user_options is False and (bannedItem.ban_on_use or bannedItem.kick_on_use or bannedItem.warn_on_use or bannedItem.timeout > 0):
                         await self.bot.get_channel(bannedItem.blacklist_msg_channel_id).send(embed=warning_embed)
                         warning_embed.print_warning_to_console()
+                        
 
                     self.save_data()
                     return
