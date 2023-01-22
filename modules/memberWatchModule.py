@@ -195,7 +195,7 @@ class MemberWatch(Cog):
                         view = PunishButtonsView(bot=self.bot, offender=messageAuthor, message=message, blacklist_msg_channel_id=bannedItem.blacklist_msg_channel_id, warning_embed=warning_embed)
                         await self.bot.get_channel(bannedItem.blacklist_msg_channel_id).send(content=f"", embed=warning_embed, view=view)
                         self.bot.add_view(PunishButtonsView(bot=self.bot, offender=messageAuthor, message=message, blacklist_msg_channel_id=bannedItem.blacklist_msg_channel_id, warning_embed=warning_embed))
-                    elif bannedItem.alow_user_options is None and (bannedItem.ban_on_use or bannedItem.kick_on_use or bannedItem.warn_on_use or bannedItem.timeout):
+                    elif bannedItem.alow_user_options is False and (bannedItem.ban_on_use or bannedItem.kick_on_use or bannedItem.warn_on_use or bannedItem.timeout > 0):
                         await self.bot.get_channel(bannedItem.blacklist_msg_channel_id).send(embed=warning_embed)
                         warning_embed.print_warning_to_console()
 
