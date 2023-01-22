@@ -3,26 +3,33 @@ from discord.ui import Button, View
 
 
 class PunishButtonsView(View):  # Persistent view for assigning single role with btns
-        def __init__(self, bot, offender, message, blacklist_msg_channel_id, warning_embed):
+        def __init__(self, bot, offender, message, blacklist_msg_channel_id, warning_embed, msg = None):
             super().__init__(timeout=None)
 
-            kick_btn = self.kickButton(bot, offender, message, blacklist_msg_channel_id, warning_embed)
-            ban_btn = self.banButton(bot, offender, message, blacklist_msg_channel_id, warning_embed)
+            kick_btn = self.kickButton(bot, offender, message, blacklist_msg_channel_id, warning_embed, msg)
+            ban_btn = self.banButton(bot, offender, message, blacklist_msg_channel_id, warning_embed, msg)
 
             self.add_item(kick_btn)
             self.add_item(ban_btn)
 
-
         class kickButton(Button):
-            def __init__(self, bot, offender, message, blacklist_msg_channel_id, warning_embed):
+            def __init__(self, bot, offender, message, blacklist_msg_channel_id, warning_embed, msg):
                 super().__init__(label="Kick", style=ButtonStyle.blurple, custom_id=f"{offender.name}#{offender.discriminator}_K")
                 self.bot = bot
                 self.offender = offender
                 self.message = message
                 self.blacklist_msg_channel_id = blacklist_msg_channel_id
                 self.warning_embed = warning_embed
+                self.msg = msg
 
             async def callback(self, interaction):
+                if self.msg is not None:
+                    # Send msg to user
+                    await self.offender.send((self.msg.format(user_mention=f"{self.offender.name}#{self.offender.discriminator}",
+                                                                channel_mention=self.message.channel.name,
+                                                                message=self.message.content,
+                                                                server_mention=self.message.guild.name)))
+
                 reason = f"{self.offender.name}#{self.offender.discriminator} has been kicked. \
                 Reason: Wrote blacklisted word in {self.message.channel.name}. {self.offender.name} said: {self.message.content}"
                 await self.message.guild.kick(self.offender, reason=reason)
@@ -36,15 +43,23 @@ class PunishButtonsView(View):  # Persistent view for assigning single role with
 
 
         class banButton(Button):
-            def __init__(self, bot, offender, message, blacklist_msg_channel_id, warning_embed):
+            def __init__(self, bot, offender, message, blacklist_msg_channel_id, warning_embed, msg):
                 super().__init__(label="Ban", style=ButtonStyle.red, custom_id=f"{offender.name}#{offender.discriminator}_B")
                 self.bot = bot
                 self.offender = offender
                 self.message = message
                 self.blacklist_msg_channel_id = blacklist_msg_channel_id
                 self.warning_embed = warning_embed
+                self.msg = msg
 
             async def callback(self, interaction):
+                if self.msg is not None:
+                    # Send msg to user
+                    await self.offender.send((self.msg.format(user_mention=f"{self.offender.name}#{self.offender.discriminator}",
+                                                                channel_mention=self.message.channel.name,
+                                                                message=self.message.content,
+                                                                server_mention=self.message.guild.name)))
+
                 reason = f"{self.offender.name}#{self.offender.discriminator} has been banned. \
                 Reason: Wrote blacklisted word in {self.message.channel.name}. {self.offender.name} said: {self.message.content}"
                 await self.message.guild.ban(self.offender, reason=reason)
