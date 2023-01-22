@@ -46,13 +46,13 @@ class MemberWatch(Cog):
     @Cog.listener()
     async def on_member_join(self, member):
         self.data["joins"].append(time.time())
-
+        sent_msg = False
         for user in self.recent_kick_or_banned_users:
             if user == member.id:
                 await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(content=f"{member.mention} has joined the server. This user was recently kicked from the server!")
                 print(f"member {member.name}#{member.discriminator} joined. This user was recently kicked from the server")
-
-        else:
+                sent_msg = True
+        if sent_msg is False:
             await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(content=f"{member.mention} has joined the server.")
             print(f"member {member.name}#{member.discriminator} joined")
 
@@ -72,11 +72,14 @@ class MemberWatch(Cog):
         self.data["leaves"].append(time.time())
         # embed = LeaveEmbed(member)
         # await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(embed=embed)
+
+        sent_msg = False
         for user in self.recent_kick_or_banned_users:
             if user == member.id:
                 await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(content=f"**{member.name}#{member.discriminator}** has been kicked out of the server.")
                 print(f"member {member.name}#{member.discriminator} has been kicked out of the server")
-        else:
+                sent_msg = True
+        if sent_msg is False:
             await self.bot.get_channel(int(config["MemberWatch"]["join_msg_channel_id"])).send(content=f"**{member.name}#{member.discriminator}** has left the server.")
             print(f"member {member.name}#{member.discriminator} left")
 
