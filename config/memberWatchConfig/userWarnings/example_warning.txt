@@ -1,0 +1,4 @@
+{user_mention} this is a warning for using a banned word.
+ Reason: You wrote blacklisted word in **{channel_mention}** on the **{server_mention}** Server. You said: {message}
+ 
+Note that this sentence contains one or more banned words and therefore have been deleted
