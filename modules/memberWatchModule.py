@@ -40,6 +40,8 @@ class MemberWatch(Cog):
     async def on_ready(self):
         print("Member Watch Module: ONLINE")
         await self.load_blacklist(startup=True)
+        if datetime.datetime.utcnow().strftime("%d") == "1":
+            await self.report_data()
 
     @Cog.listener()
     async def on_member_join(self, member):

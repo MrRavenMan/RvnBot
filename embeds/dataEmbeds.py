@@ -13,7 +13,7 @@ class ReportEmbed(InfoEmbed):
         leaves = len(data["leaves"])
         self.add_field(name="Membership overview:", value=f"Since {start}: \n \
                                                               - {joins} users have joined the server \
-                                                              - {leaves} users have left the server.", inline=False)
+                                                              \n - {leaves} users have left the server.", inline=False)
 
         blacklist_removals = len(data["blacklist_removals"])
         self.add_field(name="Blacklist overview:", value=f"Since {start}: \n   - {blacklist_removals} messages containing blacklisted words have been deleted", inline=False)
