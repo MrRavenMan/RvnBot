@@ -1,0 +1,37 @@
+{
+    "title": "Embedded Message Example",
+    "description": "This text will be in the embed",
+    "use_footer": true,
+    "footer": "This text will be displayed in the footer of the embed",
+    "use_colour": true,
+    "r": 5,
+    "g": 0,
+    "b": 99,
+    "fields": [
+        {
+            "header": "Field 1",
+            "text": "This is the text displayed in field 1",
+            "inline": true
+        },
+        {
+            "header": "Field 2",
+            "text": "This is the text displayed in field 2",
+            "inline": true
+        },
+        {
+            "header": "Field 3",
+            "text": "This is the text displayed in field 3",
+            "inline": false
+        },
+        {
+            "header": "Field 4",
+            "text": "This is the text displayed in field 4",
+            "inline": true
+        },
+        {
+            "header": "Field 5",
+            "text": "This is the text displayed in field 5",
+            "inline": true
+        }
+    ]
+}

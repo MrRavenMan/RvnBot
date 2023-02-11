@@ -7,6 +7,7 @@ from helpers.command_helpers import cmd_acknowledge
 from helpers.config_loader import config, admin
 
 from embeds.infoEmbeds import BotStatusEmbed
+from embeds.msgEmbed import MsgEmbed
 
 
 class General(Cog):
@@ -82,7 +83,21 @@ class General(Cog):
         await ctx.interaction.response.send_message(content=description, delete_after=3)
         await self.bot.close()
 
-    @command(aliases=["msg"], brief='Make bot send message in chat')  # Command to shut down the bot
+    @has_any_role(admin, config["General"]["manage_embed"])
+    @slash_command(name="embed", description="Send message with embed") # Command to pick users reacting to msg
+    async def embed(self, ctx):
+        embed = MsgEmbed(2)
+        await ctx.send(embed=embed)
+        await ctx.interaction.response.send_message(content=f"Embed created!", delete_after=0.1)
+
+    @has_any_role(admin, config["General"]["manage_pin"])
+    @slash_command(name="pin", description="Pin/Unpin message") # Command to pin/unpin messages
+    async def pin(self, ctx, msg_id: Option(int, description="Message ID", required=True),):
+        message = await ctx.fetch_message(msg_id)
+        await message.pin()
+        await ctx.interaction.response.send_message(content=f"Embed created!", delete_after=0.1)
+
+    @command(aliases=["msg"], brief='Make bot send message in chat')  # Make bot send message in chat
     @has_any_role(admin, config["General"]["manage_msg"])
     async def message(self, ctx):
         msg = ctx.message.content.replace("!msg", "").replace("!message", "")

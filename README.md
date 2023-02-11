@@ -189,6 +189,9 @@ On button click, RavenBot will pick a random roulette item for the user and send
 `!message` or `!msg`. Command to write a message, that RavenBot will write in same channel. Can be used to make RavenBot write a message or send a picture in a channel. 
 Type !message or !msg followed by the text or pictures you want RavenBot to send in the channel.
 
+`/pin` Command to pin/unpin the mssage
+
+`/embed` Command to spawn embedded message configured in 'config/embed_msg.json` file. The bot does NOT need to be restarted if the embed file has been reconfigured.
 
 
 ## Setup
