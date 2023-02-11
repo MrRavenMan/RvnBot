@@ -187,13 +187,13 @@ class MemberWatch(Cog):
                             self.data["warned_users"][f"{messageAuthor.name}#{messageAuthor.discriminator}"] = 1
                         self.recent_kick_or_banned_users.append(messageAuthor.id)
 
-
                     if bannedItem.allow_user_options and bannedItem.ban_on_use is False and bannedItem.kick_on_use is False:
                         self.recent_kick_or_banned_users.append(messageAuthor.id)
                         view = PunishButtonsView(bot=self.bot, offender=messageAuthor, message=message, blacklist_msg_channel_id=bannedItem.blacklist_msg_channel_id, warning_embed=warning_embed, msg=self.user_warnings[bannedItem.user_msg_path])
                         await self.bot.get_channel(bannedItem.blacklist_msg_channel_id).send(content=f"", embed=warning_embed, view=view)
                         self.bot.add_view(PunishButtonsView(bot=self.bot, offender=messageAuthor, message=message, blacklist_msg_channel_id=bannedItem.blacklist_msg_channel_id, warning_embed=warning_embed, msg=self.user_warnings[bannedItem.user_msg_path]))
-                    elif bannedItem.alow_user_options is False and (bannedItem.ban_on_use or bannedItem.kick_on_use or bannedItem.warn_on_use or bannedItem.timeout > 0):
+                        warning_embed.print_warning_to_console()
+                    else:
                         await self.bot.get_channel(bannedItem.blacklist_msg_channel_id).send(embed=warning_embed)
                         warning_embed.print_warning_to_console()
                         
@@ -292,6 +292,7 @@ class MemberWatch(Cog):
                 blacklisted_item.warn_on_use = blacklisted_item.warn_on_use[0] # This is due to line: warn_on_use=bool(sub_blacklist["warn_on_use"]) somehow returning a tuple instead of bool
                 # No clue why this bug occurs
                 blacklisted_item.user_msg_path = blacklisted_item.user_msg_path[0] # Same issue as above :/
+                blacklisted_item.allow_user_options = blacklisted_item.allow_user_options[0] # Same issue as above :/
 
                 if blacklisted_item.full_word is True:
                     self.blacklist_words.append((blacklisted_item))
