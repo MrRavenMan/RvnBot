@@ -92,10 +92,14 @@ class General(Cog):
 
     @has_any_role(admin, config["General"]["manage_pin"])
     @slash_command(name="pin", description="Pin/Unpin message") # Command to pin/unpin messages
-    async def pin(self, ctx, msg_id: Option(int, description="Message ID", required=True),):
-        message = await ctx.fetch_message(msg_id)
-        await message.pin()
-        await ctx.interaction.response.send_message(content=f"Embed created!", delete_after=0.1)
+    async def pin(self, ctx, msg_id: Option(str, description="Message ID", required=True),):
+        message = await ctx.fetch_message(int(msg_id))
+        if message.pinned:
+            await message.unpin(reason=f"Message of ID {msg_id} was unpinned by {ctx.interaction.user}")
+            await ctx.interaction.response.send_message(content=f"Message unpinned!", delete_after=1)
+        else:
+            await message.pin(reason=f"Message of ID {msg_id} was pinned by {ctx.interaction.user}")
+            await ctx.interaction.response.send_message(content=f"Message pinned!", delete_after=1)
 
     @command(aliases=["msg"], brief='Make bot send message in chat')  # Make bot send message in chat
     @has_any_role(admin, config["General"]["manage_msg"])
